@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Discover Morocco — an immersive journey through the Kingdom's imperial cities, living medinas, Saharan dunes and Atlantic shores. Cities, landmarks, cuisine and culture.">
+<meta name="theme-color" content="#0c0a09">
+<title>Discover Morocco — Kingdom of Light & Colour</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Outfit:wght@200;300;400;500;600;700&family=Reem+Kufi:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   DISCOVER MOROCCO — design tokens
+   Display: Cormorant Garamond (high-contrast luxury serif)
+   Body/UI: Outfit (clean geometric sans)
+   Arabic decorative: Reem Kufi (geometric kufic, architectural)
+   ============================================================ */
+:root{
+  --red:#C1272D;       --red-deep:#7d1418;
+  --green:#006233;     --green-deep:#013d20;
+  --gold:#D4AF37;      --gold-bright:#f0d27a;
+  --beige:#F5E6CA;     --sand:#e8d3a8;
+  --ink:#0c0a09;       --ink-2:#15110d;
+  --char:#1c1714;
+
+  /* themed surfaces (dark default) */
+  --bg:#0c0a09;
+  --bg-grad-1:#1a1209;
+  --bg-grad-2:#0c0a09;
+  --surface:rgba(28,23,20,.55);
+  --surface-solid:#15110d;
+  --glass:rgba(245,230,202,.05);
+  --glass-line:rgba(212,175,55,.18);
+  --text:#f3ead7;
+  --text-soft:rgba(243,234,215,.66);
+  --text-faint:rgba(243,234,215,.4);
+  --hairline:rgba(212,175,55,.16);
+  --shadow:0 30px 80px -30px rgba(0,0,0,.85);
+  --halo:0 0 60px -10px rgba(212,175,55,.35);
+
+  --maxw:1240px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  --ease-out:cubic-bezier(.22,.61,.36,1);
+  --r-lg:26px; --r-md:18px; --r-sm:12px;
+  --font-d:"Cormorant Garamond",Georgia,serif;
+  --font-b:"Outfit",system-ui,-apple-system,sans-serif;
+  --font-ar:"Reem Kufi","Outfit",sans-serif;
+}
+[data-theme="light"]{
+  --bg:#f3e9d4;
+  --bg-grad-1:#fbf4e4;
+  --bg-grad-2:#efe2c6;
+  --surface:rgba(255,251,243,.7);
+  --surface-solid:#fffaf0;
+  --glass:rgba(255,255,255,.45);
+  --glass-line:rgba(193,39,45,.16);
+  --text:#241a12;
+  --text-soft:rgba(36,26,18,.7);
+  --text-faint:rgba(36,26,18,.45);
+  --hairline:rgba(122,68,20,.18);
+  --shadow:0 30px 70px -34px rgba(80,40,10,.4);
+  --halo:0 0 50px -12px rgba(193,39,45,.28);
+  --char:#fff7ea;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation-duration:.001ms!important;transition-duration:.001ms!important}}
+body{
+  font-family:var(--font-b);
+  background:var(--bg);
+  color:var(--text);
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  transition:background .6s var(--ease),color .6s var(--ease);
+}
+body.locked{overflow:hidden}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+img{max-width:100%;display:block}
+::selection{background:var(--gold);color:var(--ink)}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px}
+
+/* fluid type scale */
+h1,h2,h3,h4{font-family:var(--font-d);font-weight:600;line-height:1.04;letter-spacing:-.01em}
+.eyebrow{
+  font-family:var(--font-b);font-weight:500;font-size:.72rem;letter-spacing:.34em;
+  text-transform:uppercase;color:var(--gold);display:inline-flex;align-items:center;gap:.7em;
+}
+.eyebrow::before{content:"";width:30px;height:1px;background:linear-gradient(90deg,transparent,var(--gold))}
+.eyebrow.center::after{content:"";width:30px;height:1px;background:linear-gradient(90deg,var(--gold),transparent)}
+.ar{font-family:var(--font-ar);direction:rtl}
+
+/* ---------- custom cursor ---------- */
+.cursor,.cursor-dot{position:fixed;top:0;left:0;pointer-events:none;z-index:9999;border-radius:50%;mix-blend-mode:difference}
+.cursor{width:34px;height:34px;border:1.5px solid var(--gold-bright);transform:translate(-50%,-50%);transition:width .25s var(--ease),height .25s var(--ease),background .25s,border-color .25s}
+.cursor-dot{width:5px;height:5px;background:var(--gold-bright);transform:translate(-50%,-50%)}
+.cursor.hot{width:54px;height:54px;background:rgba(212,175,55,.16);border-color:transparent}
+@media (hover:none),(pointer:coarse){.cursor,.cursor-dot{display:none}}
+
+/* ---------- loader ---------- */
+#loader{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;
+  background:radial-gradient(120% 120% at 50% 30%,#1a1209,#0c0a09 70%);transition:opacity .8s var(--ease),visibility .8s}
+#loader.done{opacity:0;visibility:hidden}
+.loader-mark{display:flex;flex-direction:column;align-items:center;gap:26px}
+.loader-star{width:96px;height:96px;animation:spin 4.5s linear infinite}
+.loader-star path{fill:none;stroke:var(--gold);stroke-width:2;
+  stroke-dasharray:1;stroke-dashoffset:1;animation:draw 2.4s var(--ease) forwards}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes draw{to{stroke-dashoffset:0;stroke-dasharray:0}}
+.loader-mark .lt{font-family:var(--font-d);font-size:1.6rem;letter-spacing:.2em;color:var(--beige);opacity:0;animation:fadeUp .8s .5s forwards}
+.loader-mark .lar{font-family:var(--font-ar);color:var(--gold);font-size:1.3rem;opacity:0;animation:fadeUp .8s .8s forwards}
+.loader-bar{width:180px;height:2px;background:rgba(212,175,55,.18);border-radius:2px;overflow:hidden}
+.loader-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--red),var(--gold));animation:load 2.2s var(--ease) forwards}
+@keyframes load{to{width:100%}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+
+/* ---------- header ---------- */
+header{position:fixed;top:0;left:0;right:0;z-index:900;transition:all .5s var(--ease)}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:18px 28px;margin:14px auto;max-width:var(--maxw);
+  border-radius:60px;border:1px solid transparent;transition:all .5s var(--ease)}
+header.scrolled .nav{background:var(--surface);backdrop-filter:blur(22px) saturate(160%);
+  -webkit-backdrop-filter:blur(22px) saturate(160%);border-color:var(--glass-line);
+  box-shadow:0 20px 50px -28px rgba(0,0,0,.7);padding:12px 22px}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--font-d);font-size:1.35rem;font-weight:600;letter-spacing:.01em}
+.brand svg{width:30px;height:30px;flex:none}
+.brand b{color:var(--gold);font-weight:600}
+.brand small{display:block;font-family:var(--font-ar);font-size:.72rem;color:var(--gold);letter-spacing:.05em;margin-top:-4px}
+.menu{display:flex;gap:6px;align-items:center}
+.menu a{font-size:.86rem;font-weight:400;padding:9px 15px;border-radius:40px;color:var(--text-soft);
+  transition:.3s var(--ease);position:relative}
+.menu a:hover,.menu a.active{color:var(--text);background:var(--glass)}
+.nav-tools{display:flex;align-items:center;gap:8px}
+.icon-btn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;
+  border:1px solid var(--hairline);color:var(--text-soft);transition:.3s var(--ease);background:var(--glass)}
+.icon-btn:hover{color:var(--gold);border-color:var(--gold);transform:translateY(-2px)}
+.icon-btn svg{width:18px;height:18px}
+.lang-wrap{position:relative}
+.lang-menu{position:absolute;top:52px;right:0;background:var(--surface-solid);border:1px solid var(--glass-line);
+  border-radius:var(--r-sm);padding:6px;display:none;flex-direction:column;gap:2px;min-width:150px;
+  box-shadow:var(--shadow);z-index:999}
+.lang-menu.open{display:flex}
+.lang-menu button{padding:10px 14px;border-radius:8px;text-align:left;font-size:.88rem;color:var(--text-soft);transition:.3s}
+.lang-menu button:hover,.lang-menu button.active{background:var(--glass);color:var(--gold)}
+.burger{display:none}
+@media(max-width:980px){
+  .menu{display:none}
+  .burger{display:grid}
+}
+
+/* mobile drawer */
+#drawer{position:fixed;inset:0;z-index:899;background:rgba(8,6,4,.6);backdrop-filter:blur(10px);
+  opacity:0;visibility:hidden;transition:.4s var(--ease)}
+#drawer.open{opacity:1;visibility:visible}
+.drawer-panel{position:absolute;top:0;right:0;height:100%;width:min(82vw,360px);
+  background:var(--surface-solid);border-left:1px solid var(--glass-line);
+  padding:90px 30px 40px;display:flex;flex-direction:column;gap:6px;
+  transform:translateX(100%);transition:.5s var(--ease)}
+#drawer.open .drawer-panel{transform:none}
+.drawer-panel a{font-family:var(--font-d);font-size:1.5rem;padding:12px 0;border-bottom:1px solid var(--hairline);color:var(--text-soft);transition:.3s}
+.drawer-panel a:hover{color:var(--gold);padding-left:10px}
+
+/* ---------- buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:10px;padding:15px 30px;border-radius:50px;
+  font-weight:500;font-size:.92rem;letter-spacing:.01em;transition:.4s var(--ease);position:relative;overflow:hidden}
+.btn svg{width:17px;height:17px;transition:transform .4s var(--ease)}
+.btn-gold{background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:#2a1d05;box-shadow:0 16px 40px -16px rgba(212,175,55,.7)}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 22px 50px -16px rgba(212,175,55,.8)}
+.btn-gold:hover svg{transform:translateX(4px)}
+.btn-ghost{border:1px solid var(--hairline);color:var(--text);background:var(--glass)}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-3px)}
+
+/* ---------- page system ---------- */
+.page{display:none;animation:pageIn .7s var(--ease)}
+.page.active{display:block}
+@keyframes pageIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.page-head{padding:150px 0 40px;text-align:center;position:relative}
+.page-head h1{font-size:clamp(2.6rem,7vw,5rem);margin:14px 0 10px}
+.page-head p{color:var(--text-soft);max-width:620px;margin:0 auto;font-size:1.05rem}
+.section{padding:70px 0;position:relative}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(34px);transition:opacity 1s var(--ease),transform 1s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+.reveal.d1{transition-delay:.08s}.reveal.d2{transition-delay:.16s}.reveal.d3{transition-delay:.24s}.reveal.d4{transition-delay:.32s}
+
+/* zellige divider */
+.zellige-rule{height:60px;background-repeat:repeat-x;background-position:center;background-size:auto 60px;opacity:.5;margin:10px 0}
+
+/* ---------- HERO ---------- */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;padding:120px 0 60px}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.sky{position:absolute;inset:0;opacity:.35;background:
+  radial-gradient(120% 90% at 72% 8%, #f3c87a 0%, #e3893f 14%, #b8472f 32%, #6e1f24 55%, #2a1118 78%, #0c0a09 100%)}
+[data-theme="light"] .sky{background:radial-gradient(120% 95% at 70% 10%,#ffe9b8,#ffc277 24%,#f08a4e 48%,#d65b3a 70%,#a23a2e 100%)}
+.sun{position:absolute;top:8%;left:70%;width:340px;height:340px;border-radius:50%;
+  background:radial-gradient(circle,#ffe7ad 0%,#ffce7a 38%,rgba(255,180,90,.35) 60%,transparent 72%);
+  filter:blur(2px);transform:translate(-50%,0)}
+.haze{position:absolute;inset:0;background:linear-gradient(to top,var(--bg) 2%,transparent 42%)}
+.stars{position:absolute;inset:0;opacity:.5}
+.star{position:absolute;width:2px;height:2px;background:#fff;border-radius:50%;animation:tw 4s ease-in-out infinite}
+@keyframes tw{0%,100%{opacity:.2}50%{opacity:1}}
+.dunes{position:absolute;left:0;right:0;bottom:0;width:100%}
+.dunes svg{width:100%;display:block}
+.dust{position:absolute;inset:0;overflow:hidden;z-index:1;pointer-events:none}
+.mote{position:absolute;bottom:-10px;width:3px;height:3px;border-radius:50%;background:rgba(244,209,122,.7);
+  animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-105vh) translateX(40px);opacity:0}}
+
+.hero-inner{position:relative;z-index:3;width:100%;display:flex;flex-direction:column;align-items:center;text-align:center}
+.hero-copy{display:flex;flex-direction:column;align-items:center}
+.hero-inner .ar-big{font-family:var(--font-ar);font-size:clamp(1.3rem,3vw,2rem);color:var(--gold-bright);
+  letter-spacing:.06em;margin-bottom:20px;opacity:0;animation:fadeUp 1s .3s forwards;
+  text-align:center;direction:rtl;position:relative;z-index:2}
+.hero-title{font-size:clamp(3rem,8.5vw,6.6rem);line-height:.98;margin:6px 0 18px;font-weight:600}
+.hero-title .l{display:block;overflow:hidden}
+.hero-title .l span{display:block;transform:translateY(110%);animation:lineUp 1.1s var(--ease) forwards}
+.hero-title .l:nth-child(1) span{animation-delay:.35s}
+.hero-title .l:nth-child(2) span{animation-delay:.5s}
+.hero-title .l:nth-child(3) span{animation-delay:.65s}
+.hero-title .gold{color:transparent;background:linear-gradient(120deg,var(--gold-bright),var(--gold) 50%,#9c7c22);-webkit-background-clip:text;background-clip:text;font-style:italic}
+@keyframes lineUp{to{transform:none}}
+.hero-sub{font-size:1.12rem;color:var(--text-soft);max-width:560px;margin-bottom:32px;opacity:0;animation:fadeUp 1s .85s forwards;text-align:center}
+.hero-cta{display:flex;gap:14px;flex-wrap:wrap;opacity:0;animation:fadeUp 1s 1s forwards;justify-content:center}
+.hero-side{opacity:1}
+
+/* hero stat orbits / mini cities */
+.hero-card{background:var(--surface);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border:1px solid var(--glass-line);border-radius:var(--r-lg);padding:26px;box-shadow:var(--shadow)}
+.hero-card h4{font-size:1.5rem;display:flex;align-items:center;gap:10px}
+.hero-card .live{font-family:var(--font-b);font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--green);
+  display:inline-flex;align-items:center;gap:6px}
+.hero-card .live i{width:7px;height:7px;border-radius:50%;background:#2ec27e;box-shadow:0 0 0 0 rgba(46,194,126,.6);animation:pulse 2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(46,194,126,.5)}70%{box-shadow:0 0 0 10px rgba(46,194,126,0)}100%{box-shadow:0 0 0 0 rgba(46,194,126,0)}}
+.mini-cities{margin-top:18px;display:flex;flex-direction:column;gap:2px}
+.mini-city{display:flex;align-items:center;gap:14px;padding:11px 12px;border-radius:14px;transition:.3s var(--ease);cursor:pointer}
+.mini-city:hover{background:var(--glass);transform:translateX(4px)}
+.mini-city .mc-art{width:46px;height:46px;border-radius:12px;flex:none;position:relative;overflow:hidden}
+.mini-city .mc-meta b{display:block;font-family:var(--font-d);font-size:1.15rem;line-height:1.1}
+.mini-city .mc-meta span{font-size:.76rem;color:var(--text-faint)}
+.mini-city .mc-go{margin-left:auto;color:var(--gold);opacity:0;transition:.3s}
+.mini-city:hover .mc-go{opacity:1}
+
+.scroll-hint{display:none;position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:4;
+  display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--text-faint);font-size:.7rem;letter-spacing:.3em;text-transform:uppercase}
+.scroll-hint .m{display:none;width:22px;height:36px;border:1.5px solid var(--hairline);border-radius:14px;position:relative}
+.scroll-hint .m::after{display:none;content:"";position:absolute;top:7px;left:50%;width:3px;height:7px;background:var(--gold);border-radius:2px;transform:translateX(-50%);animation:scrolldot 1.8s infinite}
+@keyframes scrolldot{0%{opacity:0;top:7px}40%{opacity:1}80%{opacity:0;top:18px}100%{opacity:0}}
+/* no hero-side mobile rule needed — it's a standalone section now */
+
+/* ---------- stats band ---------- */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hairline);
+  border:1px solid var(--hairline);border-radius:var(--r-lg);overflow:hidden}
+.stat{background:var(--bg);padding:38px 24px;text-align:center;transition:.4s var(--ease)}
+.stat:hover{background:var(--glass)}
+.stat .num{font-family:var(--font-d);font-size:clamp(2.4rem,5vw,3.4rem);font-weight:600;
+  background:linear-gradient(120deg,var(--gold-bright),var(--red));-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+.stat .lbl{margin-top:8px;font-size:.82rem;color:var(--text-soft);letter-spacing:.04em}
+@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+/* ---------- section header ---------- */
+.sec-head{text-align:center;max-width:680px;margin:0 auto 48px}
+.sec-head h2{font-size:clamp(2.2rem,5.4vw,3.6rem);margin:16px 0 12px}
+.sec-head p{color:var(--text-soft)}
+.sec-head .em{color:var(--gold);font-style:italic}
+
+/* ---------- city cards grid ---------- */
+.grid{display:grid;gap:24px}
+.grid.c3{grid-template-columns:repeat(3,1fr)}
+.grid.c4{grid-template-columns:repeat(4,1fr)}
+.grid.c2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:1040px){.grid.c4{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:900px){.grid.c3,.grid.c4{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.grid.c2,.grid.c3,.grid.c4{grid-template-columns:1fr}}
+
+.card{position:relative;border-radius:var(--r-lg);overflow:hidden;cursor:pointer;
+  border:1px solid var(--hairline);background:var(--surface-solid);
+  transform:translateZ(0);transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .5s}
+.card:hover{transform:translateY(-8px);box-shadow:var(--shadow),var(--halo);border-color:var(--gold)}
+.card-art{height:240px;position:relative;overflow:hidden}
+.card-art .art-img{position:absolute;inset:0;transition:transform .8s var(--ease)}
+.card:hover .art-img{transform:scale(1.08)}
+.card-art::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(8,6,4,.92) 4%,rgba(8,6,4,.2) 50%,transparent)}
+.card-tag{position:absolute;top:14px;left:14px;z-index:2;font-size:.66rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:6px 12px;border-radius:30px;background:rgba(8,6,4,.5);backdrop-filter:blur(8px);border:1px solid var(--glass-line);color:var(--gold)}
+.card-ar{position:absolute;top:14px;right:16px;z-index:2;font-family:var(--font-ar);font-size:1.5rem;color:rgba(245,230,202,.85)}
+.card-body{position:absolute;bottom:0;left:0;right:0;z-index:2;padding:22px}
+.card-body h3{font-size:1.8rem;line-height:1;color:#fff}
+.card-body .sub{color:rgba(245,230,202,.7);font-size:.86rem;margin-top:4px;display:flex;align-items:center;gap:8px}
+.card-body .more{margin-top:14px;font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);
+  display:inline-flex;align-items:center;gap:8px;opacity:0;transform:translateY(8px);transition:.4s var(--ease)}
+.card:hover .more{opacity:1;transform:none}
+
+/* art-img gradient util filled by JS via inline style; pattern overlay */
+.art-pattern{position:absolute;inset:0;opacity:.28;mix-blend-mode:overlay;background-size:120px}
+.art-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1;opacity:0;transition:opacity .6s var(--ease)}
+.art-photo.loaded{opacity:1}
+
+/* ---------- modal (city / landmark detail) ---------- */
+.modal{position:fixed;inset:0;z-index:1000;display:none}
+.modal.open{display:block}
+.modal-scrim{position:absolute;inset:0;background:rgba(6,4,3,.78);backdrop-filter:blur(12px);animation:fade .5s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal-card{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(960px,94vw);max-height:90vh;overflow-y:auto;background:var(--surface-solid);
+  border:1px solid var(--glass-line);border-radius:var(--r-lg);box-shadow:var(--shadow);animation:modalIn .6s var(--ease)}
+@keyframes modalIn{from{opacity:0;transform:translate(-50%,-46%) scale(.97)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.modal-card::-webkit-scrollbar{width:8px}
+.modal-card::-webkit-scrollbar-thumb{background:var(--hairline);border-radius:4px}
+.modal-hero{height:300px;position:relative;overflow:hidden}
+.modal-hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,var(--surface-solid),transparent 60%)}
+.modal-hero .mh-txt{position:absolute;bottom:22px;left:30px;z-index:2;right:30px}
+.modal-hero h2{font-size:clamp(2.4rem,5vw,3.4rem);color:#fff;line-height:1}
+.modal-hero .mh-sub{color:rgba(245,230,202,.8);display:flex;gap:16px;flex-wrap:wrap;margin-top:6px;font-size:.9rem}
+.modal-close{position:absolute;top:18px;right:18px;z-index:5;width:44px;height:44px;border-radius:50%;
+  background:rgba(8,6,4,.5);backdrop-filter:blur(10px);border:1px solid var(--glass-line);display:grid;place-items:center;color:#fff;transition:.3s}
+.modal-close:hover{background:var(--red);transform:rotate(90deg)}
+.modal-body{padding:34px 34px 40px}
+.modal-body h4{font-family:var(--font-b);font-size:.78rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:26px 0 12px;display:flex;align-items:center;gap:10px}
+.modal-body h4::before{content:"";width:18px;height:1px;background:var(--gold)}
+.modal-body p.lead{font-size:1.08rem;color:var(--text-soft);line-height:1.7}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chip{padding:8px 15px;border-radius:30px;background:var(--glass);border:1px solid var(--hairline);font-size:.84rem;color:var(--text-soft)}
+.chip b{color:var(--gold);font-weight:500}
+.mini-gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mini-gallery .mg{height:90px;border-radius:12px;position:relative;overflow:hidden;cursor:pointer;transition:.4s var(--ease)}
+.mini-gallery .mg:hover{transform:scale(1.04)}
+.attraction{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--hairline)}
+.attraction .an{font-family:var(--font-d);font-size:1.3rem;color:var(--gold);flex:none;width:38px}
+.attraction b{font-family:var(--font-d);font-size:1.25rem;font-weight:500}
+.attraction p{font-size:.9rem;color:var(--text-soft);margin-top:2px}
+@media(max-width:600px){.mini-gallery{grid-template-columns:repeat(2,1fr)}.modal-body{padding:24px 20px 30px}}
+
+/* ---------- timeline ---------- */
+.timeline{position:relative;max-width:880px;margin:0 auto;padding-left:30px}
+.timeline::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;
+  background:linear-gradient(to bottom,var(--gold),var(--red),transparent)}
+.tl-item{position:relative;padding:0 0 40px 36px}
+.tl-item::before{content:"";position:absolute;left:-30px;top:4px;width:14px;height:14px;border-radius:50%;
+  background:var(--bg);border:3px solid var(--gold);box-shadow:0 0 0 4px rgba(212,175,55,.12)}
+.tl-item .yr{font-family:var(--font-d);font-size:1.4rem;color:var(--gold);font-style:italic}
+.tl-item h4{font-size:1.5rem;margin:2px 0 6px}
+.tl-item p{color:var(--text-soft);font-size:.96rem}
+
+/* ---------- cuisine ---------- */
+.dish{display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;
+  padding:22px;border-radius:var(--r-lg);border:1px solid var(--hairline);background:var(--surface-solid);
+  transition:.5s var(--ease);position:relative;overflow:hidden}
+.dish:hover{border-color:var(--gold);transform:translateY(-5px);box-shadow:var(--shadow)}
+.dish-art{width:140px;height:140px;border-radius:50%;position:relative;overflow:hidden;flex:none;
+  border:2px solid var(--glass-line);box-shadow:inset 0 0 30px rgba(0,0,0,.4)}
+.dish:hover .dish-art{transform:rotate(8deg) scale(1.05);transition:.6s var(--ease)}
+.dish-meta .d-top{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.dish-meta h3{font-size:1.8rem}
+.dish-meta .d-ar{font-family:var(--font-ar);color:var(--gold);font-size:1.3rem}
+.dish-meta .origin{font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--green);font-weight:500;margin-top:2px}
+[data-theme="dark"] .dish-meta .origin{color:#3fd089}
+.dish-meta p{color:var(--text-soft);font-size:.94rem;margin:8px 0 12px}
+.ingredients{display:flex;flex-wrap:wrap;gap:7px}
+.ing{font-size:.76rem;padding:5px 12px;border-radius:20px;background:var(--glass);border:1px solid var(--hairline);color:var(--text-soft)}
+@media(max-width:560px){.dish{grid-template-columns:1fr;text-align:center}.dish-art{margin:0 auto}.ingredients,.dish-meta .d-top{justify-content:center}}
+
+/* ---------- culture grid ---------- */
+.culture-grid{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:200px;gap:18px}
+.cult{position:relative;border-radius:var(--r-lg);overflow:hidden;border:1px solid var(--hairline);
+  padding:26px;display:flex;flex-direction:column;justify-content:flex-end;cursor:pointer;transition:.5s var(--ease)}
+.cult::before{content:"";position:absolute;inset:0;z-index:0;transition:transform .7s var(--ease)}
+.cult:hover::before{transform:scale(1.08)}
+.cult::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(8,6,4,.9),transparent 70%);z-index:1}
+.cult>*{position:relative;z-index:2}
+.cult:hover{border-color:var(--gold);transform:translateY(-5px)}
+.cult .ci{font-family:var(--font-ar);font-size:1.4rem;color:var(--gold-bright);opacity:.9}
+.cult h3{font-size:1.7rem;color:#fff;margin-top:4px}
+.cult p{font-size:.86rem;color:rgba(245,230,202,.78);margin-top:6px}
+.cult.big{grid-column:span 3;grid-row:span 2}
+.cult.wide{grid-column:span 3}
+.cult.tall{grid-column:span 2;grid-row:span 2}
+.cult.std{grid-column:span 2}
+@media(max-width:900px){.culture-grid{grid-template-columns:repeat(2,1fr);grid-auto-rows:180px}
+  .cult.big,.cult.wide,.cult.tall,.cult.std{grid-column:span 1;grid-row:span 1}
+  .cult.big{grid-column:span 2}}
+
+/* ---------- interactive map ---------- */
+.map-wrap{position:relative;display:grid;grid-template-columns:1fr 360px;gap:30px;align-items:start}
+.map-stage{position:relative;border-radius:var(--r-lg);border:1px solid var(--hairline);
+  background:radial-gradient(120% 120% at 30% 10%,#1b130b,#0c0a09);overflow:hidden;padding:20px}
+[data-theme="light"] .map-stage{background:radial-gradient(120% 120% at 30% 10%,#fbf3e1,#eaddc2)}
+.map-svg{width:100%;height:auto;display:block;cursor:grab}
+.map-country{display:none;fill:rgba(212,175,55,.06);stroke:var(--gold);stroke-width:1.4;
+  filter:drop-shadow(0 0 20px rgba(212,175,55,.2));transition:.5s}
+.map-node{cursor:pointer}
+.map-node circle.dot{fill:var(--red);stroke:#fff;stroke-width:1.5;transition:.3s var(--ease)}
+.map-node:hover circle.dot,.map-node.sel circle.dot{fill:var(--gold);r:9}
+.map-node circle.halo{fill:var(--red);opacity:.25;animation:nodepulse 2.4s ease-in-out infinite}
+.map-node.sel circle.halo{fill:var(--gold)}
+@keyframes nodepulse{0%,100%{r:8;opacity:.25}50%{r:15;opacity:0}}
+.map-node text{fill:var(--text);font-family:var(--font-b);font-size:9px;font-weight:500;
+  paint-order:stroke;stroke:var(--bg);stroke-width:3px;transition:.3s;pointer-events:none}
+.map-node:hover text,.map-node.sel text{fill:var(--gold)}
+.map-info{background:var(--surface-solid);border:1px solid var(--glass-line);border-radius:var(--r-lg);
+  padding:26px;position:sticky;top:100px;min-height:340px}
+.map-info .mi-art{height:130px;border-radius:var(--r-md);position:relative;overflow:hidden;margin-bottom:16px}
+.map-info h3{font-size:2rem}
+.map-info .mi-region{color:var(--gold);font-size:.84rem;letter-spacing:.1em;text-transform:uppercase}
+.map-info p{color:var(--text-soft);font-size:.92rem;margin:12px 0}
+.map-info .mi-stats{display:flex;gap:18px;margin-top:8px}
+.map-info .mi-stats div b{font-family:var(--font-d);font-size:1.5rem;color:var(--gold);display:block}
+.map-info .mi-stats div span{font-size:.72rem;color:var(--text-faint)}
+@media(max-width:880px){.map-wrap{grid-template-columns:1fr}.map-info{position:relative;top:0}}
+
+/* ---------- gallery masonry ---------- */
+.filters{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:34px}
+.filter{padding:10px 20px;border-radius:40px;border:1px solid var(--hairline);font-size:.85rem;color:var(--text-soft);transition:.3s var(--ease);background:var(--glass)}
+.filter.active,.filter:hover{background:var(--gold);color:#2a1d05;border-color:var(--gold)}
+.masonry{column-count:4;column-gap:18px}
+@media(max-width:1040px){.masonry{column-count:3}}
+@media(max-width:760px){.masonry{column-count:2}}
+@media(max-width:460px){.masonry{column-count:1}}
+.tile{break-inside:avoid;margin-bottom:18px;border-radius:var(--r-md);overflow:hidden;position:relative;cursor:pointer;
+  border:1px solid var(--hairline);transition:.5s var(--ease)}
+.tile:hover{transform:scale(1.02);border-color:var(--gold);box-shadow:var(--halo)}
+.tile-art{position:relative}
+.tile-art::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(8,6,4,.85),transparent 55%);opacity:0;transition:.4s}
+.tile:hover .tile-art::after{opacity:1}
+.tile-cap{position:absolute;bottom:0;left:0;right:0;padding:16px;z-index:2;opacity:0;transform:translateY(10px);transition:.4s var(--ease)}
+.tile:hover .tile-cap{opacity:1;transform:none}
+.tile-cap b{font-family:var(--font-d);font-size:1.3rem;color:#fff;display:block}
+.tile-cap span{font-size:.74rem;color:var(--gold);letter-spacing:.14em;text-transform:uppercase}
+
+/* lightbox */
+.lightbox{position:fixed;inset:0;z-index:1100;display:none;place-items:center;background:rgba(4,3,2,.92);backdrop-filter:blur(8px)}
+.lightbox.open{display:grid}
+.lb-art{width:min(820px,92vw);height:min(560px,72vh);border-radius:var(--r-md);position:relative;overflow:hidden;box-shadow:var(--shadow);animation:modalIn .5s var(--ease)}
+.lb-cap{position:absolute;bottom:0;left:0;right:0;padding:24px;background:linear-gradient(to top,rgba(8,6,4,.9),transparent);z-index:2}
+.lb-cap b{font-family:var(--font-d);font-size:1.8rem;color:#fff;display:block}
+.lb-close{position:fixed;top:24px;right:24px;z-index:1101;width:48px;height:48px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-line);display:grid;place-items:center;color:#fff}
+.lb-close:hover{background:var(--red);transform:rotate(90deg);transition:.3s}
+.lb-nav{position:fixed;top:50%;transform:translateY(-50%);width:54px;height:54px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-line);display:grid;place-items:center;color:#fff;z-index:1101;transition:.3s}
+.lb-nav:hover{background:var(--gold);color:#2a1d05}
+.lb-prev{left:24px}.lb-next{right:24px}
+
+/* ---------- travel guide ---------- */
+.guide-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.guide-card{padding:30px;border-radius:var(--r-lg);border:1px solid var(--hairline);background:var(--surface-solid);transition:.5s var(--ease)}
+.guide-card:hover{border-color:var(--gold);transform:translateY(-5px);box-shadow:var(--shadow)}
+.guide-card .gi{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;margin-bottom:16px;
+  background:linear-gradient(135deg,var(--red),var(--red-deep));color:var(--gold-bright)}
+.guide-card .gi svg{width:24px;height:24px}
+.guide-card h3{font-size:1.55rem;margin-bottom:8px}
+.guide-card p{color:var(--text-soft);font-size:.92rem}
+.guide-card ul{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:8px}
+.guide-card li{font-size:.9rem;color:var(--text-soft);padding-left:22px;position:relative}
+.guide-card li::before{content:"";position:absolute;left:0;top:9px;width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
+@media(max-width:900px){.guide-grid{grid-template-columns:1fr}}
+
+/* seasons strip */
+.seasons{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--hairline);border:1px solid var(--hairline);border-radius:var(--r-lg);overflow:hidden;margin-top:30px}
+.season{background:var(--bg);padding:26px 20px;text-align:center;transition:.4s}
+.season:hover{background:var(--glass)}
+.season .s-ico{font-size:1.8rem}
+.season h4{font-size:1.4rem;margin:8px 0 4px;color:var(--gold)}
+.season p{font-size:.84rem;color:var(--text-soft)}
+@media(max-width:680px){.seasons{grid-template-columns:repeat(2,1fr)}}
+
+/* itinerary */
+.itins{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:30px}
+.itin{border:1px solid var(--hairline);border-radius:var(--r-lg);overflow:hidden;background:var(--surface-solid);transition:.5s var(--ease)}
+.itin:hover{transform:translateY(-5px);border-color:var(--gold);box-shadow:var(--shadow)}
+.itin-top{padding:22px;position:relative;overflow:hidden}
+.itin-top::after{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(8,6,4,.5),rgba(8,6,4,.75))}
+.itin-top *{position:relative;z-index:2}
+.itin-top .days{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-bright)}
+.itin-top h3{font-size:1.7rem;color:#fff;margin-top:4px}
+.itin-body{padding:20px 22px}
+.itin-body .route{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.86rem;color:var(--text-soft)}
+.itin-body .route span{color:var(--gold)}
+.itin-body p{font-size:.88rem;color:var(--text-soft);margin-top:12px}
+@media(max-width:900px){.itins{grid-template-columns:1fr}}
+
+/* ---------- AI recommender ---------- */
+.ai-panel{border:1px solid var(--glass-line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface-solid);box-shadow:var(--shadow)}
+.ai-head{padding:22px 26px;display:flex;align-items:center;gap:14px;border-bottom:1px solid var(--hairline);
+  background:linear-gradient(135deg,rgba(193,39,45,.14),rgba(0,98,51,.1))}
+.ai-orb{width:46px;height:46px;border-radius:50%;flex:none;position:relative;
+  background:radial-gradient(circle at 35% 30%,var(--gold-bright),var(--gold) 45%,var(--red) 100%);
+  box-shadow:0 0 24px rgba(212,175,55,.55);animation:float 4s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.ai-head b{font-family:var(--font-d);font-size:1.4rem;display:block}
+.ai-head span{font-size:.78rem;color:var(--text-faint)}
+.ai-body{padding:26px;display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.ai-q label{font-size:.74rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);display:block;margin:18px 0 10px}
+.ai-q:first-child label{margin-top:0}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{padding:9px 16px;border-radius:30px;border:1px solid var(--hairline);font-size:.86rem;color:var(--text-soft);transition:.3s var(--ease);background:var(--glass)}
+.opt.sel,.opt:hover{background:var(--green);border-color:var(--green);color:#fff}
+[data-theme="dark"] .opt.sel,[data-theme="dark"] .opt:hover{background:var(--green);color:#eafff3}
+.ai-out{background:var(--bg);border:1px solid var(--hairline);border-radius:var(--r-md);padding:22px;min-height:240px}
+.ai-typing{color:var(--text-faint);font-size:.9rem;font-style:italic}
+.ai-rec{display:flex;gap:14px;padding:14px;border-radius:14px;background:var(--glass);margin-bottom:10px;
+  animation:fadeUp .6s var(--ease) both;cursor:pointer;transition:.3s}
+.ai-rec:hover{transform:translateX(4px);background:var(--surface)}
+.ai-rec .ar-art{width:54px;height:54px;border-radius:12px;flex:none;position:relative;overflow:hidden}
+.ai-rec b{font-family:var(--font-d);font-size:1.3rem;display:block;line-height:1.1}
+.ai-rec span{font-size:.82rem;color:var(--text-soft)}
+.ai-rec .match{margin-left:auto;align-self:center;font-family:var(--font-d);font-size:1.4rem;color:var(--gold)}
+@media(max-width:800px){.ai-body{grid-template-columns:1fr}}
+
+/* ---------- search overlay ---------- */
+.search-overlay{position:fixed;inset:0;z-index:1050;display:none;background:rgba(6,4,3,.8);backdrop-filter:blur(14px)}
+.search-overlay.open{display:block;animation:fade .4s}
+.search-box{max-width:680px;margin:12vh auto 0;padding:0 24px}
+.search-field{display:flex;align-items:center;gap:14px;background:var(--surface-solid);border:1px solid var(--glass-line);
+  border-radius:60px;padding:8px 8px 8px 26px;box-shadow:var(--shadow)}
+.search-field svg{width:22px;height:22px;color:var(--gold)}
+.search-field input{flex:1;background:none;border:none;outline:none;color:var(--text);font-size:1.2rem;font-family:var(--font-d);padding:14px 0}
+.search-field input::placeholder{color:var(--text-faint)}
+.search-close{width:46px;height:46px;border-radius:50%;background:var(--glass);display:grid;place-items:center;color:var(--text-soft)}
+.search-close:hover{background:var(--red);color:#fff}
+.search-results{margin-top:18px;background:var(--surface-solid);border:1px solid var(--hairline);border-radius:var(--r-lg);max-height:54vh;overflow-y:auto}
+.sr{display:flex;align-items:center;gap:16px;padding:16px 22px;border-bottom:1px solid var(--hairline);cursor:pointer;transition:.3s}
+.sr:hover{background:var(--glass)}
+.sr .sr-art{width:50px;height:50px;border-radius:12px;flex:none;position:relative;overflow:hidden}
+.sr b{font-family:var(--font-d);font-size:1.25rem;display:block;line-height:1.1}
+.sr span{font-size:.78rem;color:var(--text-faint)}
+.sr .sr-type{margin-left:auto;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);padding:5px 12px;border:1px solid var(--hairline);border-radius:20px}
+.sr-empty{padding:40px;text-align:center;color:var(--text-faint)}
+
+/* ---------- footer ---------- */
+footer{margin-top:60px;border-top:1px solid var(--hairline);background:var(--bg-grad-2);position:relative;overflow:hidden}
+.foot-pattern{position:absolute;inset:0;opacity:.05;background-size:140px}
+.foot-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;padding:60px 0 40px;position:relative}
+.foot-brand .brand{font-size:1.8rem;margin-bottom:14px}
+.foot-brand p{color:var(--text-soft);font-size:.92rem;max-width:300px}
+.foot-col h5{font-family:var(--font-b);font-size:.76rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.foot-col a{display:block;color:var(--text-soft);font-size:.92rem;padding:5px 0;transition:.3s}
+.foot-col a:hover{color:var(--gold);padding-left:6px}
+.foot-bottom{border-top:1px solid var(--hairline);padding:24px 0;text-align:center;color:var(--text-faint);font-size:.84rem;position:relative}
+.foot-bottom .ar{color:var(--gold);font-size:1rem}
+@media(max-width:860px){.foot-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.foot-grid{grid-template-columns:1fr}}
+
+/* back to top */
+.totop{position:fixed;bottom:26px;right:26px;z-index:880;width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gold-bright),var(--gold));color:#2a1d05;display:grid;place-items:center;
+  box-shadow:0 16px 36px -12px rgba(212,175,55,.7);opacity:0;visibility:hidden;transform:translateY(20px);transition:.4s var(--ease)}
+.totop.show{opacity:1;visibility:visible;transform:none}
+.totop:hover{transform:translateY(-4px) scale(1.05)}
+
+/* progress bar */
+.scrollbar{position:fixed;top:0;left:0;height:3px;z-index:950;width:0;
+  background:linear-gradient(90deg,var(--red),var(--gold),var(--green))}
+
+/* utility */
+.tac{text-align:center}
+.mt40{margin-top:40px}.mt30{margin-top:30px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+@media(max-width:820px){.split{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- ===== loader ===== -->
+<div id="loader">
+  <div class="loader-mark">
+    <svg class="loader-star" viewBox="0 0 100 100">
+      <path d="M50 4 L61 30 L89 30 L66 48 L75 76 L50 59 L25 76 L34 48 L11 30 L39 30 Z"/>
+      <path d="M50 18 L57 36 L77 36 L61 48 L67 68 L50 56 L33 68 L39 48 L23 36 L43 36 Z"/>
+    </svg>
+    <div class="lar ar">المغرب</div>
+    <div class="lt">DISCOVER MOROCCO</div>
+    <div class="loader-bar"><i></i></div>
+  </div>
+</div>
+
+<!-- cursor -->
+<div class="cursor"></div><div class="cursor-dot"></div>
+
+<!-- scroll progress -->
+<div class="scrollbar"></div>
+
+<!-- ===== header ===== -->
+<header id="header">
+  <nav class="wrap nav">
+    <a class="brand" href="#" data-go="home" aria-label="Discover Morocco home">
+      <svg viewBox="0 0 100 100"><path d="M50 6 L60 32 L88 32 L65 50 L74 78 L50 60 L26 78 L35 50 L12 32 L40 32 Z" fill="none" stroke="var(--gold)" stroke-width="4"/><circle cx="50" cy="50" r="6" fill="var(--red)"/></svg>
+      <span>Discover<b>Morocco</b><small class="ar">المغرب</small></span>
+    </a>
+    <div class="menu" id="menu">
+      <a data-go="home" class="active">Home</a>
+      <a data-go="cities">Cities</a>
+      <a data-go="landmarks">Landmarks</a>
+      <a data-go="cuisine">Cuisine</a>
+      <a data-go="culture">Culture</a>
+      <a data-go="map">Map</a>
+      <a data-go="gallery">Gallery</a>
+      <a data-go="guide">Travel Guide</a>
+    </div>
+    <div class="nav-tools">
+      <button class="icon-btn" id="searchBtn" aria-label="Search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+      <div class="lang-wrap">
+        <button class="icon-btn" id="langBtn" aria-label="Language">
+         <span style="font-size:.8rem;font-weight:600">FR</span>
+        </button>
+        <div class="lang-menu" id="langMenu">
+          <button data-lang="fr" class="active">🇫🇷 Français</button>
+          <button data-lang="en">🇬🇧 English</button>
+          <button data-lang="ar">🇲🇦 العربية</button>
+       </div>
+     </div>
+      <button class="icon-btn" id="themeBtn" aria-label="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="themeIcon"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg></button>
+      <button class="icon-btn burger" id="burger" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+    </div>
+  </nav>
+</header>
+
+<!-- mobile drawer -->
+<div id="drawer">
+  <div class="drawer-panel">
+    <a data-go="home">Home</a>
+    <a data-go="cities">Cities</a>
+    <a data-go="landmarks">Landmarks</a>
+    <a data-go="cuisine">Cuisine</a>
+    <a data-go="culture">Culture</a>
+    <a data-go="map">Map</a>
+    <a data-go="gallery">Gallery</a>
+    <a data-go="guide">Travel Guide</a>
+  </div>
+</div>
+
+<!-- ===== search overlay ===== -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-box">
+    <div class="search-field">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" id="searchInput" placeholder="Search cities, landmarks, dishes…" autocomplete="off">
+      <button class="search-close" id="searchClose"><svg viewBox="0 0 24 24" width="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<main id="app">
+
+<!-- ============ HOME ============ -->
+<section class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-bg">
+      <video class="hero-video" autoplay muted loop playsinline>
+         <source src="videos/morocco-bg.mp4" type="video/mp4">
+         </video>
+      <div class="sky"></div>
+      <div class="stars" id="stars"></div>
+      <div class="dunes" data-parallax="-0.06">
+        <svg viewBox="0 0 1440 320" preserveAspectRatio="none">
+          <path fill="#3a1e16" d="M0 220 C 220 160 360 250 600 210 C 840 170 980 250 1180 200 C 1320 170 1400 210 1440 200 L1440 320 L0 320 Z"/>
+          <path fill="#23120e" d="M0 270 C 260 220 420 290 720 250 C 1000 215 1140 285 1440 250 L1440 320 L0 320 Z"/>
+          <path fill="#0c0a09" d="M0 300 C 300 275 520 312 820 295 C 1080 282 1240 310 1440 296 L1440 320 L0 320 Z"/>
+        </svg>
+      </div>
+      <div class="dust" id="dust"></div>
+      <div class="haze"></div>
+    </div>
+    <div class="hero-inner wrap">
+      <div class="ar-big ar">المملكة المغربية</div>
+      <div class="hero-copy">
+        <h1 class="hero-title">
+          <span class="l"><span>Discover the</span></span>
+          <span class="l"><span class="gold">Kingdom</span></span>
+          <span class="l"><span>of Morocco</span></span>
+        </h1>
+        <p class="hero-sub">From the snow-dusted Atlas to the saffron dunes of the Sahara, from imperial medinas to the wild Atlantic — a thousand years of light, colour and welcome await.</p>
+        <div class="hero-cta">
+          <button class="btn btn-gold" data-go="cities">Explore the Cities <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          <button class="btn btn-ghost" data-go="map">Open the Map</button>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-hint"><span>Scroll</span><div class="m"></div></div>
+  </div>
+
+  <!-- featured cities card -->
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow center">Essential cities</span>
+        <h2>Where will you <span class="em">wander?</span></h2>
+      </div>
+      <div class="hero-side reveal d1" style="max-width:560px;margin:0 auto">
+        <div class="hero-card">
+          <span class="live"><i></i>Live · Featured cities</span>
+          <h4>Top destinations</h4>
+          <div class="mini-cities" id="heroCities"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- stats -->
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow center">The Kingdom in numbers</span>
+        <h2>A land measured in <span class="em">centuries & colour</span></h2>
+      </div>
+      <div class="stats reveal d1">
+        <div class="stat"><div class="num" data-count="12" data-suffix="">0</div><div class="lbl">Cities to explore</div></div>
+        <div class="stat"><div class="num" data-count="9" data-suffix="">0</div><div class="lbl">UNESCO World Heritage sites</div></div>
+        <div class="stat"><div class="num" data-count="3500" data-suffix="+">0</div><div class="lbl">Kilometres of coastline</div></div>
+        <div class="stat"><div class="num" data-count="1200" data-suffix="+">0</div><div class="lbl">Years of imperial history</div></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="zellige-rule" data-zellige></div>
+
+  <!-- featured cities slider -->
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow center">Featured destinations</span>
+        <h2>Twelve cities, <span class="em">one endless story</span></h2>
+        <p>Each carries its own dialect of light — the rose walls of Marrakech, the blue lanes of Chefchaouen, the Atlantic spray of Essaouira.</p>
+      </div>
+      <div class="grid c3 reveal d1" id="featuredCities"></div>
+      <div class="tac mt40 reveal d2">
+        <button class="btn btn-ghost" data-go="cities">See all 12 cities <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI recommender -->
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow center">Concierge · mockup</span>
+        <h2>Let the <span class="em">Atlas guide</span> plan your journey</h2>
+        <p>Tell us your mood and pace — our recommendation engine matches you to the cities that fit. (Interactive prototype.)</p>
+      </div>
+      <div class="ai-panel reveal d1">
+        <div class="ai-head">
+          <div class="ai-orb"></div>
+          <div><b>Atlas</b><span>AI travel concierge · powered by Discover Morocco</span></div>
+        </div>
+        <div class="ai-body">
+          <div>
+            <div class="ai-q"><label>What draws you to Morocco?</label><div class="opts" data-group="vibe">
+              <button class="opt" data-v="history">History & medinas</button>
+              <button class="opt" data-v="beach">Beaches & ocean</button>
+              <button class="opt" data-v="mountains">Mountains & nature</button>
+              <button class="opt" data-v="food">Food & souks</button>
+              <button class="opt" data-v="calm">Calm & colour</button>
+            </div></div>
+            <div class="ai-q"><label>Your travel pace</label><div class="opts" data-group="pace">
+              <button class="opt" data-v="slow">Slow & soulful</button>
+              <button class="opt" data-v="balanced">Balanced</button>
+              <button class="opt" data-v="packed">See it all</button>
+            </div></div>
+            <div class="ai-q"><label>Trip length</label><div class="opts" data-group="len">
+              <button class="opt" data-v="short">3–5 days</button>
+              <button class="opt" data-v="week">A week</button>
+              <button class="opt" data-v="long">10+ days</button>
+            </div></div>
+            <button class="btn btn-gold mt30" id="aiRun" style="width:100%;justify-content:center">Find my Morocco <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+          </div>
+          <div class="ai-out" id="aiOut">
+            <div class="ai-typing">Select your preferences and I'll map your ideal route through the Kingdom…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ CITIES ============ -->
+<section class="page" id="page-cities">
+  <div class="page-head">
+    <div class="wrap">
+      <span class="eyebrow center">The Cities Explorer</span>
+      <h1>Twelve Imperial & <span style="font-style:italic;color:var(--gold)">Coastal Jewels</span></h1>
+      <p>Wander from the red ramparts of the south to the whitewashed harbours of the north. Tap any city to step inside its history, culture and finest sights.</p>
+    </div>
+  </div>
+  <section class="section" style="padding-top:20px">
+    <div class="wrap"><div class="grid c3" id="citiesGrid"></div></div>
+  </section>
+</section>
+
+<!-- ============ LANDMARKS ============ -->
+<section class="page" id="page-landmarks">
+  <div class="page-head">
+    <div class="wrap">
+      <span class="eyebrow center">Historical Landmarks</span>
+      <h1>Where stone <span style="font-style:italic;color:var(--gold)">remembers</span></h1>
+      <p>Roman cities, Almohad minarets and palaces of a thousand and one nights — ten monuments that chart Morocco's long imperial arc.</p>
+    </div>
+  </div>
+  <section class="section" style="padding-top:20px">
+    <div class="wrap"><div class="grid c3" id="landmarksGrid"></div></div>
+  </section>
+  <div class="zellige-rule" data-zellige></div>
+  <section class="section">
+    <div class="wrap">
+      <div class="sec-head reveal">
+        <span class="eyebrow center">A timeline of empires</span>
+        <h2>Twelve centuries of <span class="em">building</span></h2>
+      </div>
+      <div class="timeline" id="timeline"></div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ CUISINE ============ -->
+<section class="page" id="page-cuisine">
+  <div class="page-head">
+    <div class="wrap">
+      <span class="eyebrow center">Moroccan Cuisine</span>
+      <h1>A table set with <span style="font-style:italic;color:var(--gold)">saffron & smoke</span></h1>
+      <p>Slow-cooked tagines, golden couscous Fridays and the ceremony of mint tea — ten dishes that tell the story of a generous kitchen.</p>
+    </div>
+  </div>
+  <section class="section" style="padding-top:20px">
+    <div class="wrap"><div class="grid c2" id="cuisineGrid"></div></div>
+  </section>
+</section>
+
+<!-- ============ CULTURE ============ -->
+<section class="page" id="page-culture">
+  <div class="page-head">
+    <div class="wrap">
+      <span class="eyebrow center">Moroccan Culture</span>
+      <h1>A living <span style="font-style:italic;color:var(--gold)">mosaic</span></h1>
+      <p>Amazigh roots, Andalusian grace, Saharan rhythm and Atlantic trade — woven together over a thousand years.</p>
+    </div>
+  </div>
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="culture-grid" id="cultureGrid"></div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ MAP ============ -->
+<section class="page" id="page-map">
+  <div class="page-head">
+    <div class="wrap">
+      <span class="eyebrow center">Interactive Map</span>
+      <h1>Trace your <span style="font-style:italic;color:var(--gold)">route</span></h1>
+      <p>Click a glowing node to reveal each city. From Tangier on the strait to Dakhla on the Saharan Atlantic.</p>
+    </div>
+  </div>
+  <section class="section" style="padding-top:10px">
+    <div class="wrap">
+      <div class="map-wrap">
+        <div class="map-stage">
+          <svg class="map-svg" id="mapSvg" viewBox="0 0 520 620">
+            <image href="images/carte-maroc-touristique-lieux-a-visiter.jpg" x="0" y="0" width="520" height="620" preserveAspectRatio="xMidYMid meet"/>
+          </svg>
+        </div>
+        <div class="map-info" id="mapInfo"></div>
+      </div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ GALLERY ============ -->
+<section class="page" id="page-gallery">
+  <div class="page-head">
+    <div class="wrap">
+      <span class="eyebrow center">Media Gallery</span>
+      <h1>Morocco in <span style="font-style:italic;color:var(--gold)">full colour</span></h1>
+      <p>A curated wall of light — doorways, dunes, tilework and tea. Filter by theme, tap to enlarge.</p>
+    </div>
+  </div>
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="filters" id="galleryFilters"></div>
+      <div class="masonry" id="galleryGrid"></div>
+    </div>
+  </section>
+</section>
+
+<!-- ============ GUIDE ============ -->
+<section class="page" id="page-guide">
+  <div class="page-head">
+    <div class="wrap">
+      <span class="eyebrow center">Travel Guide</span>
+      <h1>Everything for the <span style="font-style:italic;color:var(--gold)">perfect trip</span></h1>
+      <p>When to come, how to move, what to know — and three ready-made routes through the Kingdom.</p>
+    </div>
+  </div>
+  <section class="section" style="padding-top:20px">
+    <div class="wrap">
+      <div class="guide-grid">
+        <div class="guide-card reveal">
+          <div class="gi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+          <h3>Best time to visit</h3>
+          <p>Spring and autumn are the sweet spots — warm days, soft light, fewer crowds.</p>
+          <ul>
+            <li>Mar–May: wildflowers in the Atlas, ideal medinas</li>
+            <li>Sep–Nov: harvest season, gentle heat</li>
+            <li>Dec–Feb: ski Oukaïmeden, escape to the warm south</li>
+            <li>Jun–Aug: head to the coast — Essaouira & Agadir</li>
+          </ul>
+        </div>
+        <div class="guide-card reveal d1">
+          <div class="gi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 17h16M6 17V8l3-3h6l3 3v9"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/></svg></div>
+          <h3>Getting around</h3>
+          <p>Morocco moves easily — fast trains link the north, grand taxis fill the gaps.</p>
+          <ul>
+            <li>Al Boraq: Africa's first high-speed line, Tangier–Casa</li>
+            <li>ONCF trains connect Rabat, Fez, Marrakech</li>
+            <li>CTM & Supratours buses for the south</li>
+            <li>Rent a 4×4 for the Atlas & desert pistes</li>
+          </ul>
+        </div>
+        <div class="guide-card reveal d2">
+          <div class="gi"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a7 7 0 00-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 00-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg></div>
+          <h3>Good to know</h3>
+          <p>A few graces smooth every journey through the Kingdom.</p>
+          <ul>
+            <li>Dirham (MAD) is the currency; carry small notes</li>
+            <li>Arabic & Amazigh official; French & English widely spoken</li>
+            <li>Dress modestly in medinas & religious sites</li>
+            <li>Bargaining in souks is expected — and friendly</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sec-head mt40 reveal" style="margin-bottom:18px">
+        <h2 style="font-size:clamp(1.8rem,4vw,2.6rem)">A season for every <span class="em">mood</span></h2>
+      </div>
+      <div class="seasons reveal d1">
+        <div class="season"><div class="s-ico">🌸</div><h4>Spring</h4><p>Blossom, green valleys, perfect medinas</p></div>
+        <div class="season"><div class="s-ico">☀️</div><h4>Summer</h4><p>Coastal breezes, festivals, long evenings</p></div>
+        <div class="season"><div class="s-ico">🍂</div><h4>Autumn</h4><p>Golden light, date harvest, desert nights</p></div>
+        <div class="season"><div class="s-ico">❄️</div><h4>Winter</h4><p>Atlas snow, warm south, quiet souks</p></div>
+      </div>
+
+      <div class="sec-head mt40 reveal" style="margin-bottom:18px">
+        <h2 style="font-size:clamp(1.8rem,4vw,2.6rem)">Three routes, <span class="em">one kingdom</span></h2>
+      </div>
+      <div class="itins" id="itins"></div>
+    </div>
+  </section>
+</section>
+
+</main>
+
+<!-- ===== detail modal ===== -->
+<div class="modal" id="modal">
+  <div class="modal-scrim" data-close></div>
+  <div class="modal-card" id="modalCard"></div>
+</div>
+
+<!-- ===== lightbox ===== -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose"><svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  <button class="lb-nav lb-prev" id="lbPrev"><svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <button class="lb-nav lb-next" id="lbNext"><svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></button>
+  <div class="lb-art" id="lbArt"></div>
+</div>
+
+<!-- ===== footer ===== -->
+<footer>
+  <div class="foot-pattern" data-zellige></div>
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <a class="brand" href="#" data-go="home">
+        <svg viewBox="0 0 100 100"><path d="M50 6 L60 32 L88 32 L65 50 L74 78 L50 60 L26 78 L35 50 L12 32 L40 32 Z" fill="none" stroke="var(--gold)" stroke-width="4"/><circle cx="50" cy="50" r="6" fill="var(--red)"/></svg>
+        <span>Discover<b>Morocco</b></span>
+      </a>
+      <p>An immersive journey through the Kingdom of Morocco — its imperial cities, living medinas and Saharan light.</p>
+    </div>
+    <div class="foot-col">
+      <h5>Explore</h5>
+      <a data-go="cities">Cities</a><a data-go="landmarks">Landmarks</a><a data-go="cuisine">Cuisine</a><a data-go="culture">Culture</a>
+    </div>
+    <div class="foot-col">
+      <h5>Plan</h5>
+      <a data-go="map">Interactive map</a><a data-go="gallery">Gallery</a><a data-go="guide">Travel guide</a><a data-go="home">Concierge</a>
+    </div>
+    <div class="foot-col">
+      <h5>Regions</h5>
+      <a data-go="cities">Imperial cities</a><a data-go="cities">Atlantic coast</a><a data-go="cities">Rif & north</a><a data-go="cities">Sahara & south</a>
+    </div>
+  </div>
+  <div class="foot-bottom wrap">
+    <span class="ar">المغرب · أرض النور</span> &nbsp;·&nbsp; Discover Morocco — a showcase tourism concept. Crafted with care. &nbsp;·&nbsp; © 2026
+  </div>
+</footer>
+
+<button class="totop" id="totop" aria-label="Back to top"><svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+
+<script>
+/* ===================================================================
+   DISCOVER MOROCCO — engine
+   =================================================================== */
+const $ = (s,el=document)=>el.querySelector(s);
+const $$ = (s,el=document)=>[...el.querySelectorAll(s)];
+
+/* ---- shared zellige (8-point star) pattern as data URI ---- */
+const ZSVG = encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"><g fill="none" stroke="#D4AF37" stroke-width="1.1" opacity="0.9"><path d="M60 8l12 22 24 4-12 22 12 22-24 4-12 22-12-22-24-4 12-22-12-22 24-4z"/><path d="M60 26l7 13 14 2-7 13 7 13-14 2-7 13-7-13-14-2 7-13-7-13 14-2z"/><circle cx="60" cy="60" r="6"/><path d="M0 60h18M102 60h18M60 0v18M60 102v18"/></g></svg>`);
+const ZURL = `data:image/svg+xml,${ZSVG}`;
+/* gold-on-dark line zellige for dividers/footer */
+const ZLINE = encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="80" height="60" viewBox="0 0 80 60"><g fill="none" stroke="#D4AF37" stroke-width="1.2"><path d="M40 4l9 16 18 3-9 16 9 16-18 3-9 16-9-16-18-3 9-16-9-16 18-3z"/><path d="M0 30h12M68 30h12"/></g></svg>`);
+
+function art(c1,c2,extraClass='',imgUrl=''){
+  const grad=`radial-gradient(120% 100% at 28% 18%, rgba(255,255,255,.28), transparent 52%), linear-gradient(150deg, ${c1}, ${c2} 86%)`;
+  const imgTag=imgUrl?`<img class="art-photo" src="${imgUrl}" alt="" loading="lazy" onload="this.classList.add('loaded')" onerror="this.style.display='none'">`:'';
+  return `<div class="art-img ${extraClass}" style="position:absolute;inset:0;background:${grad}"><div class="art-pattern" style="background-image:url('${ZURL}')"></div>${imgTag}</div>`;
+}
+function artStyle(c1,c2){return `background:radial-gradient(120% 100% at 28% 18%, rgba(255,255,255,.26), transparent 52%), linear-gradient(150deg, ${c1}, ${c2} 86%)`;}
+
+/* ===================== DATA ===================== */
+const CITIES=[
+ {id:'marrakech',name:'Marrakech',ar:'مراكش',region:'Imperial · The Red City',type:'history',tagline:'The rose-walled heart of the south',founded:'1070',pop:'~1.0M',col:['#e0795a','#7d1c1f'],x:300,y:200,
+  img:'https://img.maroc24.com/fr/cdn/marrakech-comedy-festival-ufnc5.webp',
+  history:'Founded in 1070 by the Almoravid dynasty as an imperial capital, Marrakech—the fabled "Red City"—stands as a breathtaking living monument to Moroccan history. Encircled by 19 kilometers of ancient, pink-hued rammed-earth ramparts, the city’s heart beats within its labyrinthine Medina, dominated by the majestic 12th-century Koutoubia Mosque minaret. From the opulent golden legacy of the Saadian Tombs to the theatrical, UNESCO-recognized chaos of Jemaa el-Fnaa square, Marrakech seamlessly weaves a rich tapestry of Andalusian-Berber architecture, mystical spice markets, and centuries of vibrant oral traditions that continue to enchant travelers today.',
+  culture:['The hypnotic theatre of Jemaa el-Fna at dusk','Master artisans of the souks — lanterns, leather, dyed wool','Riads hidden behind plain medina doors','A capital of Gnawa music and storytelling'],
+  traditions:['Storytellers (hlayqia) of Jemaa el-Fna','Tanneries and traditional dyeing','The slow ritual of the hammam'],
+  gallery:[
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQwk7GG1JrABxyUVehlTTWBpodsRBRowKwDAbXFoH8w7A&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCMykcTvMrTxOh4T6pQqgL_Xa0JOZTROIztp8pMlWzUC8olKcSKth08dtY&s=1024',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6hQtrUw-Gtag2fKVn6I8KOYeuYEKHImwl9JCh3fmqVtaX6U-VmFR1Bu0&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVQsxwMCH9b_AvSuOxSCsrI2EU2FFJX_WNBNHvHTtBL7WdHbY9fBiXB2cY&s=10'
+   ],
+  att:[['Bahia Palace','A jewel-box of painted cedar and zellige courtyards.'],['Jemaa el-Fna','UNESCO square of snake charmers, food stalls and acrobats.'],['Majorelle Garden','Cobalt-blue villa and gardens revived by Yves Saint Laurent.'],['Koutoubia Mosque','The 12th-century minaret that crowns the skyline.']]},
+ {id:'fez',name:'Fez',ar:'فاس',region:'Imperial · The Spiritual Capital',type:'history',tagline:'A medieval medina that never slept',founded:'789',pop:'~1.2M',col:['#caa25a','#5e3a1a'],x:370,y:140,
+  img:'https://di262mgurvkjm.cloudfront.net/1db8a274-b652-4459-99c2-3e3aaec2abcb/R09830-FR-01_uxga.jpg',
+  history:'Founded in the late 8th century by Idris I (and expanded by his son, Idris II), Fez is the spiritual and cultural heart of Morocco. It rapidly grew into a bustling metropolis during the 9th century with the arrival of thousands of refugee families from Córdoba and Kairouan, who lent their names to the city\'s historic quarters. In 859 CE, Fatima al-Fihri founded the University of al-Qarawiyyin here, recognized as the world\'s oldest continuously operating institution of higher learning. Fez reached its golden age during the Marinid dynasty (13th–15th centuries), becoming the imperial capital and an intellectual epicenter of the Islamic world. Today, its ancient walled medina, Fez el-Bali, stands as a UNESCO World Heritage site and one of the world\'s largest preserved urban pedestrian zones, famously keeping its medieval soul alive.',
+  culture:['Al Quaraouiyine — among the oldest universities on earth','The leather tanneries of Chouara','A guild tradition of brassworkers and weavers','Andalusian classical music academies'],
+  traditions:['Hand-stitched leather and the Chouara dye pits','Fassi embroidery and ceramics in cobalt blue','Sufi brotherhoods and night chants'],
+  gallery:[
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoWHelfwCX2dxR37G07i4GOTLu9G90f-T25hUNImTAtQ&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT6lIyRxBg0baizubrnabWgPXkDOEZ8J2lBA06103lT9wPD0GHUr-RU9UCm&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTGUH2B5upFOTfhqXJ-uksM76Vz4R_54Vu8o-eXKAdBPfuCv74sXUQlXMl&s=10',
+  'https://fr.le360.ma/resizer/FBz91BCTU7rPgRzczMcNsHK7bRw=/arc-photo-le360/eu-central-1-prod/public/7X53RTSQJ5APVJK24PQMMEXAKA.jpg'
+   ],
+  att:[['Al Quaraouiyine','Founded 859 — a university older than Oxford.'],['Chouara Tannery','Honeycombed dye pits worked by hand for centuries.'],['Bou Inania Madrasa','A masterpiece of Marinid carved cedar and stucco.'],['Bab Bou Jeloud','The famous blue-and-green tiled gateway.']]},
+ {id:'rabat',name:'Rabat',ar:'الرباط',region:'Imperial · The Capital',type:'history',tagline:'Garden capital on the Atlantic',founded:'1146',pop:'~580K',col:['#3f8f6e','#0c3a26'],x:325,y:128,
+  img:'https://images.pexels.com/photos/14722317/pexels-photo-14722317.jpeg?auto=compress&cs=tinysrgb&w=800&h=500&dpr=1',
+  history:'Founded in the 12th century by the Almohad caliphate, Rabat began as a ribat—a fortified military outpost—used to launch campaigns into Iberia. The city underwent massive expansion under Caliph Yaqub al-Mansur, who envisioned it as a grand imperial capital, commissioning monumental structures like the iconic Hassan Tower and the fortified Kasbah of the Udayas. Following a long period of decline after al-Mansur\'s death, Rabat experienced a dramatic resurgence in the 17th century when it became a haven for Andalusian refugees fleeing the Spanish Inquisition. These newcomers merged Rabat with neighboring Salé to form the Republic of Bou Regreg, a notorious hub for Barbary piracy. In 1912, the French protectorate established Rabat as Morocco\'s administrative center, a status it proudly maintained when the nation achieved independence in 1956.',
+  culture:['Andalusian gardens within the Udayas kasbah','A calm, administrative elegance','Contemporary art at the Mohammed VI Museum','Riverside life along the Bou Regreg'],
+  traditions:['Carpet-weaving cooperatives','The Andalusian-blue lanes of the Oudayas','Sunset promenades by the ocean ramparts'],
+  gallery:[
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTydR030gidtzpDB-QdDegLVYPQiRaeyK3cN2FJPIgMsA&s=10',
+  'https://i.ytimg.com/vi/-AHQU2LfI7E/maxresdefault.jpg',
+  'https://images.pexels.com/photos/31027359/pexels-photo-31027359.jpeg?auto=compress&cs=tinysrgb&h=627&fit=crop&w=1200',
+  'https://media.istockphoto.com/id/2211343980/photo/hassan-ii-bridge-and-grand-theatre-of-rabat-rabat-morocco.jpg?s=612x612&w=0&k=20&c=FiFpVp5rJsz7hNmVZ2fipm90PPaulI0nvmoVFyijLaA='
+   ],
+  att:[['Hassan Tower','The unfinished Almohad minaret of 1195.'],['Kasbah of the Udayas','Blue-washed lanes above the Atlantic.'],['Chellah','A Roman-Marinid necropolis reclaimed by storks.'],['Mausoleum of Mohammed V','A marble masterpiece of modern craft.']]},
+ {id:'casablanca',name:'Casablanca',ar:'الدار البيضاء',region:'Atlantic · The Metropolis',type:'food',tagline:'Morocco\'s modern, ocean-facing heart',founded:'1770s',pop:'~3.7M',col:['#8aa0b4','#243447'],x:278,y:150,
+  img:'https://www.govoyages.com/blog/wp-content/uploads/sites/14/2015/10/casablanca-cover.jpg.webp',
+  history:'Morocco\'s economic engine and largest city,originally known as Anfa, Casablanca began as a prosperous Berber port town used by traders and local pirates alike. Its strategic Atlantic positioning led to its destruction by the Portuguese in 1468, who later rebuilt it as Casa Branca ("White House") in the early 16th century. It was renamed Casablanca by Spanish merchants after a massive 1755 earthquake forced yet another reconstruction. The city transformed into Morocco\'s economic powerhouse during the French protectorate era, becoming a booming industrial hub and a canvas for striking Mauresque and Art Deco architecture. Today, Casablanca is Morocco’s largest metropolis, seamlessly blending dynamic corporate energy with cultural milestones like the magnificent Hassan II Mosque, which sits directly over the ocean.',
+  culture:['Mauresque Art Deco architecture downtown','A buzzing café and seafood scene','Contemporary galleries and design studios','The Corniche nightlife of Aïn Diab'],
+  traditions:['Fresh Atlantic seafood grills','Friday couscous in old neighbourhoods','Art-Deco façade walks'],
+  gallery:[
+  'https://i.pinimg.com/736x/ed/a0/19/eda01999bf63e3e8634d8681cd1a4e9e.jpg',
+  'https://t3.ftcdn.net/jpg/02/95/63/88/360_F_295638843_FNVhCE3vUMHNUWFVW4qFOw55BD1RR3rW.jpg',
+  'https://www.lavieeco.com/wp-content/uploads/2025/01/CFC-Casablanca.jpg',
+  'https://media.istockphoto.com/id/647288678/fr/photo/tramway-de-la-ville-dans-une-rue-de-casablanca-maroc.jpg?s=612x612&w=0&k=20&c=UgS1yJ4yIVinqdiOidgwc34bzLHxEJGzOqbX0kmEV6o='
+   ],
+  att:[['Hassan II Mosque','Towering over the ocean — a 210m minaret.'],['Old Medina','A pocket of tradition beside the modern city.'],['Mahkama du Pacha','A palace of carved cedar and zellige.'],['La Corniche','Seafront cafés, pools and sunset views.']]},
+ {id:'chefchaouen',name:'Chefchaouen',ar:'شفشاون',region:'Rif · The Blue Pearl',type:'calm',tagline:'A town painted in every shade of blue',founded:'1471',pop:'~43K',col:['#5b86c4','#1b2f63'],x:370,y:90,
+  img:'https://media.istockphoto.com/id/1156796325/fr/photo/vue-a%C3%A9rienne-de-la-m%C3%A9dina-bleue-de-la-ville-chefchaouen-maroc-afrique.jpg?s=612x612&w=0&k=20&c=43MyXDFYpPX8yAwzEDjsI83qwIQXgX3ItbPMYooZhOU=',
+  history:'Tucked away in Morocco\'s Rif Mountains, Chefchaouen was founded in 1471 by Moulay Ali Ben Moussa El Alami as a small, fortified base to fight off Portuguese invasions. The town grew exponentially in the decades that followed, offering a safe haven for thousands of Sephardic Jews and Moorish Muslims fleeing the Spanish Inquisition. This unique influx deeply infused the town with distinct Andalusian flair, visible in its terracotta-tiled roofs, winding alleyways, and courtyard homes. Famous worldwide as the "Blue Pearl," the tradition of painting the medina walls in striking shades of blue was widely expanded by Jewish refugees who arrived in the 1930s—a practice that remains today, turning its historic streets into a visually stunning mountain retreat.',
+  culture:['The endlessly photographed blue lanes','Rif Amazigh crafts and woven blankets','A slow mountain pace','Goat-cheese and honey traditions'],
+  traditions:['Hand-washing walls in shades of blue','Weaving of wool djellabas','Mountain herbal teas'],
+  gallery:[
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTMor9dnWZvExsXlx6aIetdewu8tPFPFqIdzcA0C8tbQNc0_HAy97zbr9_O&s=10',
+  'https://thumbs.dreamstime.com/b/medina-chefchaouen-morocco-de-also-known-as-chaouen-xauen-small-calm-evironment-entering-one-five-54350934.jpg',
+  'https://media.istockphoto.com/id/1997653764/photo/place-outa-el-hamam-square-with-the-grand-mosque-tower-at-sunset-in-chefchaouen-morocco.jpg?s=612x612&w=0&k=20&c=U79LZSMbM2UsYZ92tFKt2HGu9wKFYAN9fB1wG2QLEqM=',
+  'https://i.pinimg.com/736x/2d/3e/4e/2d3e4e8659f945f47347ced0fc35db79.jpg'
+   ],
+  att:[['The Blue Medina','Indigo alleys and flower-framed doors.'],['Plaza Uta el-Hammam','The kasbah-fronted main square.'],['Ras el-Maa','A waterfall where locals wash and gather.'],['Spanish Mosque','A hilltop viewpoint over the blue town.']]},
+ {id:'essaouira',name:'Essaouira',ar:'الصويرة',region:'Atlantic · The Windy City',type:'beach',tagline:'White-and-blue ramparts on the trade winds',founded:'1760s',pop:'~80K',col:['#4aa3c7','#123a4d'],x:237,y:223,
+  img:'https://t3.ftcdn.net/jpg/02/66/43/94/360_F_266439458_ZgpzO7magkJjBSK0paryUjKcT2ucXwYw.jpg',
+  history:'Known in antiquity as a Phoenician and Roman trading post famous for its purple dye production, Essaouira took its current shape in the 18th century under the Alaouite Sultan Sidi Mohammed ben Abdallah. Seeking to open Morocco to the Atlantic world and centralize maritime trade, the Sultan hired French military architect Théodore Cornut to redesign the town—then known as Mogador—resulting in a unique fortified city built according to the principles of contemporary European military architecture. He renamed it Al-Suwayra ("the beautifully designed"). The city fast became Morocco\'s premier port, welcoming an exceptionally diverse population of European merchants, Muslim traders, and a large Jewish community that managed the country\'s international commerce. Today, the UNESCO-listed medina, its iconic stone sea ramparts (the Skala), and its vibrant Gnawa musical heritage make it a celebrated cultural and coastal crossroads.',
+  culture:['Gnaoua music born of sub-Saharan roots','Thuya-wood marquetry workshops','A laid-back, bohemian harbour life','Fresh sardine grills on the quay'],
+  traditions:['The Gnaoua World Music Festival','Wind- and kitesurfing on the bay','Blue fishing boats at the working port'],
+  gallery:[
+    'https://t4.ftcdn.net/jpg/02/66/70/21/360_F_266702188_KF58fWLNXSsdjAxDY3ZZxu0iBJRAC3uN.jpg',
+    'https://t4.ftcdn.net/jpg/02/23/24/45/360_F_223244590_95mf7bRx7KN074PD3rHGSYNYckbFfCBf.jpg',
+    'https://www.moroccoprivatetours.net/uploads/119_moroccoprivatetours%20(1).jpg',
+    'https://images.unsplash.com/photo-1680633480293-b64ec2e61e01?fm=jpg&q=60&w=3000&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGVzc2FvdWlyYXxlbnwwfHwwfHx8MA%3D%3D'
+  ],
+  att:[['The Ramparts (Skala)','Cannon-lined sea walls facing the Atlantic.'],['The Medina','A UNESCO grid of white and blue.'],['The Port','Cobalt boats and a lively fish auction.'],['Mogador Islands','Falcon sanctuary off the coast.']]},
+ {id:'tangier',name:'Tangier',ar:'طنجة',region:'North · Gate of Africa',type:'food',tagline:'Where the Mediterranean meets the Atlantic',founded:'5th c. BC',pop:'~1.0M',col:['#6f8f86','#1c3530'],x:362,y:60,
+  img:'https://images.pexels.com/photos/20890430/pexels-photo-20890430/free-photo-of-ville-afrique-voyager-cote.jpeg',
+  history:'Perched contextually at the precise geographic crossroads where the Mediterranean meets the Atlantic, Tangier is one of the world\'s oldest continuously inhabited port cities. It began as a strategic Phoenician and Roman trading post, eventually developing into a contested gateway held sequentially by the Vandals, Byzantines, Arabs, Portuguese, and British—who briefly controlled it in the 17th century before abandoning it to the Moroccan Alaouite dynasty. The city\'s most unique historical chapter opened in 1923 when it was designated an International Zone jointly administered by several European powers. This status turned Tangier into an eccentric, tax-free haven that attracted international spies, eccentric millionaires, and legendary Beat Generation writers like William S. Burroughs and Jack Kerouac. Reintegrated into Morocco following independence, Tangier has since shed its shady, mid-century reputation to emerge as a dynamic, modern economic hub driven by its massive Mediterranean shipping port.',
+  culture:['A literary legacy — Bowles, Matisse, the Beats','Café culture with views of Spain','Andalusian and Mediterranean cuisine','Mythic caves and headlands nearby'],
+  traditions:['Mint tea at the Café Hafa over the strait','Fishing along the Mediterranean kasbah','The blend of Spanish and Moroccan life'],
+  gallery:[
+  'https://c1.wallpaperflare.com/preview/193/802/503/cruise-tanger-morocco-sea.jpg',
+  'https://www.shutterstock.com/shutterstock/videos/3644923491/thumb/12.jpg?ip=x480',
+  'https://ladepeche24.com/wp-content/uploads/2020/12/56470449_2237074329687766_2024518029940883456_o-1.jpg',
+  'https://blog.alkhabertravel.com/wp-content/uploads/2022/09/tan1.jpg'
+  ],
+  att:[['Kasbah Museum','A palace above the medina and harbour.'],['Caves of Hercules','Sea caves shaped like the map of Africa.'],['Cap Spartel','Where two seas visibly meet.'],['Grand Socco','The medina\'s grand, palm-fringed gateway.']]},
+ {id:'meknes',name:'Meknes',ar:'مكناس',region:'Imperial · The Versailles of Morocco',type:'history',tagline:'Monumental gates and royal granaries',founded:'11th c.',pop:'~640K',col:['#b98a3e','#4a2c10'],x:350,y:148,
+  img:'https://t4.ftcdn.net/jpg/00/77/31/87/360_F_77318708_9KNYPgVnfRHW6i5t8Gk9EnZ63hjqRUpQ.jpg',
+  history:'Meknes began as an 11th-century fortified agricultural settlement founded by the Zenata Berber tribe, the Miknasa. While it grew steadily under successive dynasties, its ultimate golden age arrived in 1672 when the powerful Alaouite Sultan Moulay Ismail made it the imperial capital of Morocco. Desiring to rival the court of his contemporary, Louis XIV of France, Moulay Ismail transformed Meknes into a spectacular, heavily fortified city, utilizing thousands of workers to construct massive ramparts, expansive royal palaces, an enormous granary complex, and magnificent monumental gateways. The most famous of these is Bab Mansour, a towering architectural masterpiece adorned with intricate zellij tilework and marble columns salvaged from the nearby ancient Roman ruins of Volubilis. Though the capital shifted back to Marrakesh after his death, Meknes survives as a beautifully preserved UNESCO World Heritage site, retaining its distinct legacy as one of Morocco\'s four historic imperial cities.',
+  culture:['The grand gates and palaces of Moulay Ismail','A UNESCO medinna of souks and mosques','Proximity to the Roman ruins of Volubilis','A city of fountains, gardens and olive groves'],
+  traditions:['Olive oil and regional wine production','Embroidery and damascened metalwork','Festivals at the holy town of Moulay Idriss'],
+  gallery:[
+  'https://www.airpano.ru/files/meknes/images/image2.jpg',
+  'https://www.moroccoprivatetours.net/uploads/660_Bab-Mansour-The-old-medina-of-Meknes.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTJ6rrNBimvQqE5GPgTMfZGCNaDA79XYUbwRpAAQhLmDQ&s=10',
+  'https://www.mifuguemiraison.com/wp-content/uploads/2026/01/jardin-lahboul-ville-meknes-900x600.jpg'
+  ],
+  att:[['Bab Mansour','One of North Africa\'s grandest gates.'],['Heri es-Souani','Colossal royal granaries and stables.'],['Mausoleum of Moulay Ismail','Resting place of the great sultan.'],['Volubilis','Roman mosaics 30km away (UNESCO).']]},
+ {id:'agadir',name:'Agadir',ar:'أكادير',region:'Souss · The Sunbelt',type:'beach',tagline:'Golden beaches and 300 days of sun',founded:'rebuilt 1960',pop:'~600K',col:['#e0b15c','#9a5a1e'],x:245,y:260,
+  img:'https://t4.ftcdn.net/jpg/00/70/75/31/360_F_70753183_cPMJSj28s60pO0uiYi1QUWv0qcKsgZE9.jpg',
+  history:'Agadir’s history is defined by a strategic maritime past and a profound modern rebirth. It emerged in the early 16th century as a Portuguese trading outpost called Santa Cruz do Cabo de Gué, but was captured in 1541 by the Saadi dynasty, who built the formidable Agadir Oufella kasbah on the hilltop to secure the coast. For centuries, it functioned as a bustling port for southern Moroccan sugar, dates, and spices. However, Agadir\'s history completely fractured on February 29, 1960, when a devastating earthquake destroyed the entire city and claimed thousands of lives in just fifteen seconds. Following a famous declaration by King Mohammed V to rebuild, Agadir was completely redesigned a few miles south of the epicenter. Today, it stands as a completely modern metropolis, characterized by wide grid avenues, contemporary architecture, and a thriving beachfront tourism economy, while the ruins of the old hilltop kasbah serve as a quiet monument to its past.',
+  culture:['Argan-oil cooperatives run by women','Amazigh Souss music and crafts','Resort-town promenade life','Surf and fishing communities'],
+  traditions:['Argan-oil pressing by hand','Ahwash collective dance','Grilled fish on the marina'],
+  gallery:[
+  'https://media.istockphoto.com/id/1262669837/photo/taroudant-panoramic-views-of-a-moroccan-historical-city.jpg?s=612x612&w=0&k=20&c=XwftDHS-r8SCjaZscuSpeb6wYVLtWhARp_WbnZ5FDk0=',
+  'https://t4.ftcdn.net/jpg/01/22/03/03/360_F_122030379_nMQOkXxvYBpG6QYUhASKFsBDkGWGwT7Z.jpg',
+  'https://media.istockphoto.com/id/2171042803/photo/agadir-morocco-at-sunset-panoramic-view-of-agadir-city-and-bay-in-southern-morocco-with.jpg?s=612x612&w=0&k=20&c=14sE1xnXilSfWAxkA2LrP4Fpkk3GFixGuk3L02L0twk=',
+  'https://media-cdn.tripadvisor.com/media/attractions-splice-spp-674x446/13/4d/80/9d.jpg'
+  ],
+  att:[['Agadir Beach','A 10km golden crescent of sand.'],['Kasbah Oufella','Hilltop ruins with sweeping bay views.'],['Souss-Massa Park','Flamingos and the rare bald ibis.'],['Marina d\'Agadir','Cafés, yachts and sunset strolls.']]},
+ {id:'tetouan',name:'Tetouan',ar:'تطوان',region:'North · The White Dove',type:'history',tagline:'Andalusian medina beneath the Rif',founded:'15th c.',pop:'~380K',col:['#cdb6a0','#5a4632'],x:382,y:75,
+  img:'https://t4.ftcdn.net/jpg/03/06/67/15/360_F_306671575_d6Uo4wFYl7dfVuWLmWpg4rco5pjfRHau.jpg',
+  history:'Set against the backdrop of the Rif Mountains, Tetouan serves as a profound monument to Hispano-Moorish culture. While the site had ancient Roman and Merenid roots, the city was truly reborn in the late 15th century when it was reconstructed by Ali al-Mandri, a refugee fleeing the fall of Granada. It quickly became a vital sanctuary for Andalusian Muslims and Sephardic Jews escaping the Spanish Inquisition, who built the city\'s exceptionally preserved medina using the precise architectural and artistic styles of their lost homeland. This deep cultural synthesis expanded further during the early 20th century, when Tetouan was designated the capital of the Spanish protectorate in Morocco. Today, Tetouan\'s UNESCO-listed old town stands alongside its Spanish-built Ensanche neighborhood, remaining one of the most culturally unique and artistically rich cities in northern Morocco.',
+  culture:['The most Andalusian medina in Morocco','A renowned school of traditional arts','Hispano-Moorish architecture','Proximity to the Mediterranean coast'],
+  traditions:['Andalusian zellige and woodcarving','Embroidery and silverwork guilds','Classical Andalusi music'],
+  gallery:[
+  'https://i.pinimg.com/736x/ed/f8/4a/edf84a14489859c36b45b73dd612818c.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT2ud5rY00sOU9x2a6OZ7VSF1vVXjujE9eU-hggmwUHUg&s=10',
+  'https://friendlymorocco.com/wp-content/uploads/2018/02/Tetouan-city-950x640.jpg',
+  'https://images.pexels.com/photos/30792308/pexels-photo-30792308/free-photo-of-aerial-view-of-mountainous-cityscape.jpeg'
+  ],
+  att:[['The White Medina','A UNESCO maze of lime-washed lanes.'],['Royal Palace','A grand façade on Place Hassan II.'],['Dar Sanaa','School preserving traditional crafts.'],['Archaeology Museum','Roman finds from nearby Lixus & Tamuda.']]},
+ {id:'Ifrane',name:'Ifrane',ar:'إفران',region:'Middle Atlas',type:'Snow',tagline:'The land of Cedar trees',founded:'1928',pop:'14K',col:['#b07a8a','#3d2030'],x:375,y:160,
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQy4-gMzUfkDDVe-MxYzRYlld1faqFx-126nSEOOnGF1pwJXQAPuuWPAluI&s=10',
+  history:'Perched high in the Middle Atlas Mountains, Ifrane’s history is entirely unique compared to Morocco’s historic imperial cities. While the region was originally inhabited by Amazigh (Berber) tribes who lived in nearby caves, the modern town was intentionally established in 1929 by the French protectorate administration. Designed as a "hill station," it was built to offer colonial families a cool, temperate escape from the oppressive summer heat of the lower plains. The French modeled the town directly after Alpine villages, complete with slanted red-tiled roofs, manicured gardens, and European-style architecture—deliberately omitting traditional Moroccan design elements like internal courtyards and high walls. Famously nicknamed "Little Switzerland," Ifrane transitioned smoothly after Moroccan independence into a premier domestic resort destination, housing the prestigious, English-language Al Akhawayn University and serving as a scenic winter hub for skiing and snow.',
+  culture:['Snow times','Winter sports and activities','Calm and serene atmosphere','Nature and wildlife of the Middle Atlas'],
+  traditions:['The Art of the Beni M\'guild Carpets','Ahidous Music and Dance','High-Altitude Transhumance'],
+  gallery:[
+  'https://t3.ftcdn.net/jpg/03/00/88/96/360_F_300889617_N0UY3oKjWHTrwJSfz8JJyJqaaeqHm5b0.jpg',
+  'https://bookifrane.com/wp-content/uploads/2025/10/ifrane-1.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFj-y2LbMGyh9TLM4lSuvTz0eue9aQLCSeuDSyokoYew&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8A5OMQuL-wgj7Uq59L5WUW72piFnKDSOaJCBMIG6f-wyPfYvFti1e8zdA&s=10'
+  ],
+  att:[['Atlas Lion','A majestic symbol of the Middle Atlas.'],['Al Akhawayn University','A prestigious English-language institution.'],['Michlifen','A charming mountain village.'],['Azrou','A cedar forest and Amazigh cultural hub.']]},
+ {id:'dakhla',name:'Dakhla',ar:'الداخلة',region:'Sahara · Atlantic Lagoon',type:'beach',tagline:'Where the desert dives into the ocean',founded:'1884',pop:'~110K',col:['#48b6c0','#0d5560'],x:72,y:455,
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6m_L7FOnKw39p0hWbJSGXrG3RfBT9QBSnGQWbIw57q65ygjiNwesAJ4yI&s=1024',
+  history:'Suspended on a narrow peninsula where the golden sands of the Sahara Desert plunge directly into the turquoise waters of the Atlantic Ocean, Dakhla possesses a unique and captivating history. Long inhabited by nomadic Sahrawi tribes, the site caught the attention of Spanish fishers and traders who established it in 1884 as Villa Cisneros, making it the first permanent settlement in colonial Spanish Sahara. It later served as a crucial refueling stop for early transatlantic aviation pioneers, including famed The Little Prince author Antoine de Saint-Exupéry, who managed the remote airfield here for the French airmail service Aéropostale. Reintegrated into Morocco in the late 1970s, Dakhla has transformed from a secluded outpost into a thriving economic gateway and a world-renowned paradise for water sports. Swept by constant year-round winds, its vast, shallow lagoon attracts a global community of kitesurfers and windsurfers, while its rich coastal waters support a booming oyster farming industry and a dynamic maritime economy.',
+  culture:['A kitesurfing and watersports mecca','Saharawi hospitality and tea ritual','Fresh oysters from the lagoon','Vast, untouched desert-meets-sea light'],
+  traditions:['The three-glass Saharawi tea ceremony','Nomadic desert camps','Lagoon oyster farming'],
+  gallery:[
+  'https://t4.ftcdn.net/jpg/20/75/48/17/360_F_2075481772_kUOKk7pmG0MkbLsEpBCmDePmQBDklm3r.jpg',
+  'https://static.lematin.ma/files/lematin/images/articles/2021/01/15bb0484794ec627b2f72449eafc946c.jpg',
+  'https://static-cms.routard.com/web-routard/uploads/maroc-dakhla-kitesurf.1594203_cc38bb1dd4.jpg',
+  'https://img.magnific.com/photos-premium/dune-sable-dans-desert-contre-ciel_1598867-3368.jpg?semt=ais_hybrid&w=740&q=80'
+  ],
+  att:[['Dakhla Lagoon','A turquoise mirror for kitesurfers.'],['White Dune','A pale dune rising from the sea.'],['Imlili Sebkha','Mysterious desert pools with fish.'],['Pointe du Dragon','A dramatic ocean headland.']]}
+];
+
+const LANDMARKS=[
+ {id:'volubilis',name:'Volubilis',city:'near Meknes',year:'c. 40 AD',sort:40,era:'Roman',col:['#b89a5c','#4a3a18'],
+  img:'https://media.tacdn.com/media/attractions-splice-spp-674x446/0e/91/d4/b0.jpg',
+  gallery:[
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBimgdQ5qwFhl9mP-Rydkt2H4k_QDjP9lhVVYPJwLass3ig5JyEtYyOpo&s=10',
+  'https://www.wendywutours.com/rehttps://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ6g1k5r7x3J8X2j4nYq0v6ZyW8zG9l1V5e7g&usqp=CAU',
+  'https://dynamic-media-cdn.tripadvisor.com/media/photo-o/1a/d2/6b/f7/caption.jpg?w=800&h=800&s=1',
+  'https://www.historyhit.com/app/uploads/bis-images/5157256/Volubilis-788x537.jpg?x64072'],
+  desc:'Volubilis (Walili) is an ancient, exceptionally well-preserved Roman archaeological site and UNESCO World Heritage monument located near Meknes, Morocco. Originally founded in the 3rd century BC as a Berber and Mauretanian capital, it later transformed into one of the Roman Empire\'s most remote southwestern outposts. The thriving, 42-hectare city generated immense wealth from olive oil production.This funded the construction of grand public structures, including a towering Triumphal Arch, a basilica, and a Capitol temple. Today, it is globally celebrated for its remarkably intact, colorful in-situ floor mosaics depicting mythological scenes within ruined aristocratic villas. The site also holds deep local historical significance as the 8th-century seat where Idris I founded the Idrisid Dynasty, the creators of the Moroccan state'},
+ {id:'quaraouiyine',name:'Al Quaraouiyine',city:'Fez',year:'859',sort:859,era:'Idrisid',col:['#cda451','#5a3a14'],
+  img:'https://t4.ftcdn.net/jpg/13/18/38/63/360_F_1318386314_YTylYTRuknBd3CEaAbNCG1Wau7SWX60o.jpg',
+  gallery:[
+  'https://carameltrail.com/wp-content/uploads/2023/08/al-qarawiyyin-mosque-and-university-fez.jpg',
+  'https://www.infinite-morocco.com/wp-content/uploads/2024/02/Al-Quaraouiyine-Mosque-1024x683.jpg',
+  'https://t3.ftcdn.net/jpg/08/75/15/32/360_F_875153257_ot9JQ1WJzMpW6mK9WByPPDOo3yG6EckE.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOe0i03dDj9Qc7PSUhyqBmVO103puYlr1cLONyLpsPH08JELsq9R1l3Bdm&s=10'],
+  desc:'The University of al-Qarawiyyin (Al-Karaouine) in Fez, Morocco, is the oldest continuously operating university in the world, founded between 857–859 AD by a wealthy Muslim woman named Fatima al-Fihri. Originally established as a community mosque and madrasa, it evolved during the Islamic Golden Age into one of the world\'s premier intellectual hubs, pioneering education in Islamic theology, mathematics, astronomy, and medicine. Located deep within the labyrinth of the Fez Medina, the architectural complex is famous for its stunning green-tiled roofs, central courtyard with detailed stucco work, and a historic library housing rare ancient manuscripts. Over the centuries, it shaped the minds of legendary thinkers, including Ibn Khaldoun and Maimonides, and it continues to serve  both an active place of worship and a modern state university.'},
+ {id:'Jardins de Menara',name:'Jardins de Menara',city:'Marrakech',year:'1147',sort:1147,era:'Almohad',col:['#d08a55','#7d1c1f'],
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIoplMr7P27xLEvuh_Nh3636aauk1QBa7jXj4i4jRadN0_s9iVHXAIZD50&s=1024',
+  gallery:['https://media.tacdn.com/media/attractions-splice-spp-360x240/0f/0d/ff/22.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTadM67J_EfY8G_7rTfX5Nkrr0VWhabxYTlzRPgaau0XQ&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTBuw9NCu3bgwBMTu_wfPemPBu2UT0B-N94YixFqGThMmh1KeBk87s1Hdo&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRejnDrlxh56rga8qaT10QRcO7er-sgUb6ZwU932TOBjUjutBig3QIU4-w&s=10'],
+  desc:'The Menara Gardens are a serene, 12th-century public park and historic orchard located west of Marrakech, Morocco, famous for its massive central water reservoir and dramatic backdrop of the High Atlas Mountains. Established by the Almohad Caliphate around 1147, the site functions as both a peaceful retreat and a masterclass in ancient engineering, utilizing an intricate underground khattara system to channel mountain water to its 900-year-old basin. While the surrounding landscape is filled with thousands of ancient, productive olive groves, the visual centerpiece of the gardens is its iconic 19th-century Saadian-style pavilion, featuring a green tiled pyramidal roof that reflects beautifully over the still waters. Today, this UNESCO World Heritage site is a favorite destination for both locals and travelers seeking a quiet escape from the bustling city, offering a glimpse into Morocco\'s rich architectural and agricultural history.'},
+ {id:'aitbenhaddou',name:'Aït Benhaddou',city:'Ouarzazate',year:'11th c.',sort:1100,era:'Saharan',col:['#cf9a5c','#6e3a18'],
+  img:'https://t3.ftcdn.net/jpg/09/31/78/62/360_F_931786286_yA0HKrlqpQS5tGkgqwCuiPpF1Zum6I30.jpg',
+  gallery:['https://media.istockphoto.com/id/2149359355/fr/photo/a%C3%AFt-ben-haddou-ksar-ou-village-fortifi%C3%A9-au-maroc.jpg?s=612x612&w=0&k=20&c=FVlnaMPOQHELAWkD53xzHuCbTOU9AXwbX6tyTjpdKzE=',
+  'https://therestlessbeans.com/wp-content/uploads/2024/11/ait-ben-haddou-morocco-mudbrick-tower.webp',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmby8eR5RQjufLxOwWh996Tikm8L9M2ExOjoTvUb42tWstvVV9jzY51SM&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSN1BKJFl5zvIe3wfJ-110F2xMuqo1_r5tgA9bXW6iu3R430ZwtjTDVzcA&s=10'],
+  desc:'A fortified earthen ksar on the old caravan route to the Sahara, Aït Benhaddou is a stacked maze of kasbahs the colour of the desert. A UNESCO site — and a favourite of filmmakers worldwide.'},
+ {id:'udayas',name:'Kasbah of the Udayas',city:'Rabat',year:'1150',sort:1150,era:'Almohad',col:['#5f8fc4','#16335f'],
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRka8Alj_OHZ9xpAXlNJu2GBbagYAwLaFz588po2atXMA&s=10',
+  gallery:['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTozZF1y_zmaVW9BNotL87zq758A5jO1tT1Ho6Xpd58-hTigs3okvyYWXs&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuhQBThaHvPig22uOQW_vaFHzyEK18BiQHTpD5DihhAQ&s=10',
+  'https://i.pinimg.com/736x/69/93/b6/6993b62107497d7568b47bae67ff75ec.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZmkKTYejgP6vaAYYeehALZEnjURfFftrrQfv5as7fV4g8p5Hckvu0y1nw&s=10'],
+  desc:'An Almohad fortress above the Bou Regreg, the Kasbah of the Udayas hides blue-and-white Andalusian lanes, a serene garden and a monumental gate overlooking the ocean.'},
+ {id:'hassan',name:'Hassan Tower',city:'Rabat',year:'1195',sort:1195,era:'Almohad',col:['#c89a55','#5a3a16'],
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRq7MG1M12xYD5EHe6YCxX40I_amsSrWQ_8d4n7Ju5GCQzgWzfRQcOyQ4w&s=1024',
+  gallery:['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSoG9g5-2DCc84wjQOq0il6PKCxEYB42spfLg4RYxZedHXXmgSBJ9xQExo&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfiJPWLzYAw0IooFjlQB-R_gi0-gz851INrPOSrzmEUg&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTAGD6neHygax3W3JnElpcdus8bhgHzehoQ6yi1JHh1Mv4fezSAoisaXw4&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSv0lDj7LJur5azMW7z94VuBRaEzE6eLmU3GPF8ii9qGg&s=10'],
+  desc:'Begun in 1195 as the minaret of what would have been the world\'s largest mosque, the Hassan Tower was left unfinished at 44 metres — its forest of broken columns now a haunting national symbol.'},
+ {id:'badi',name:'El Badi Palace',city:'Marrakech',year:'1578',sort:1578,era:'Saadian',col:['#c47a4f','#5a2418'],
+  img:'https://mylittlekech.com/wp-content/uploads/2017/01/palais-el-badi-1.jpg',
+  gallery:['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTpumZQO7ZMdxRdqdOQ0yrMMBKkFbv14zk16x2BPGRfMYe7j6JdNu5PBb5y&s=10',
+  'https://static.wixstatic.com/media/894d31_b97b9f42e5f94f74b9433590d8974675~mv2.jpg/v1/fill/w_980,h_459,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/894d31_b97b9f42e5f94f74b9433590d8974675~mv2.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRK_yoeAFF7UqAehKAdYanzAVNoe7xNmxUoGZLDCRiDSVFr3_tSJQmujdk&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvSkynJymWwXkZ151iRczq8gsgpNBlgsOKFmFwSKAE53pUcGJUJS419qC4&s=10'],
+  desc:'"The Incomparable" — the 16th-century Saadian palace of Ahmad al-Mansur once dazzled with gold, onyx and Italian marble. Now a sublime ruin of sunken gardens and nesting storks.'},
+ {id:'cistern',name:'Portuguese Cistern',city:'El Jadida',year:'1514',sort:1514,era:'Portuguese',col:['#5f7f86','#1c3a40'],
+  img:'https://media.istockphoto.com/id/2218889906/photo/the-cistern-in-the-portuguese-style-town-of-mazagan.jpg?s=612x612&w=0&k=20&c=4YglWk4XKXevL3gbORmdyvYdoJ2_uE_T0ZvwLqOre_0=',
+  gallery:['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSO0rYIO2X6CBVnvYYAsaCgRhAwSSF_huCALqst4yz2HbvLwnCVDVb12QM&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxg8stfcf8GToWVqHkbDkUfs8yklVazHJQuwhLjFa3sDFmKF4VyJEO0mqK&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRR8azDb3c1g7BegKnfN2VTLL9esz1gtpCTYL4bdSV7I4C4EjR3xZth1xga&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcReby_1eFoluqVMh0waezORsXFmVFOZyZdXpxET9Jtc5LY78fbqNYO8bEc&s=10'],
+  desc:'Beneath the Portuguese fortress of Mazagan lies a vaulted underground cistern whose still water mirrors a forest of arches — a cinematic space famously filmed by Orson Welles.'},
+ {id:'bahia',name:'Bahia Palace',city:'Marrakech',year:'1880s',sort:1880,era:'Alaouite',col:['#cf8a5a','#6e2a1a'],
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSEMcJNTk8J60v4iBzZZipXHVQyCC9y6OhotIMdw9HoRsjSp_RLmm5CuEl3&s=1024',
+  gallery:['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTWhNiYyyKL6Ejes3Ug1Sa81BrhKwAHtjmVNjRId-CV6w&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMWOWiqEA5vThXigEg-S46_J6MxOxe5SamqZMzyv_r_g&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB9eS1Cnbj0Rrn5rMlYwMKxXZfDLJHKx92Ep5ehHJ6oA&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ8NN8EsWWl5b3yB9HAATYPyRXzRBBvAiPI4i5kaeO4jw&s=10'],
+  desc:'A late-19th-century vizier\'s palace conceived as "the brilliant," the Bahia is a labyrinth of painted-cedar ceilings, zellige courtyards and orange-tree gardens — Moroccan craft at its zenith.'},
+ {id:'hercules',name:'Caves of Hercules',city:'Tangier',year:'Ancient',sort:1,era:'Prehistoric',col:['#5b6f86','#15252f'],
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQLtQwk0RKvnhT9nDIErdG677TFq-JgDFJWKgBddlKpbRk1G3q_X2YTi4Q&s=1024',
+  gallery:['https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=auto,quality=60,width=400,height=265,dpr=2/tour_img/40484b4c32acdd48d08a08857fbd9688f8ad0efa92cd00f8db494bd15e305b51.jpg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT4uvzvvLxaqVfX0UPnw9q1DPZE81P9aQ4Q4VTFabi8tsOCemJEyzKXjfQ&s=10',
+  'https://cdn.getyourguide.com/image/format=auto,fit=crop,gravity=auto,quality=60,width=400,height=265,dpr=2/tour_img/62f11ceb71d5d.jpeg',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQZWq2cyyUgii_Ve3NRc6qiKBTSr81NmqlNbAFxWZrYPh2uisfZ-suPLy4&s=10',
+  'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQd3Vm4fU3ZyS108wS7I-i3FIFzgajImooQZkbXsN4pSs52h0WQ6bWTRh8&s=10'],
+  desc:'Sea caves near Cap Spartel where legend places Hercules at rest. The famous opening to the Atlantic is shaped, uncannily, like the map of Africa.'}
+];
+
+const DISHES=[
+ {id:'tagine',name:'Tagine',ar:'طاجين',origin:'Nationwide',type:'Slow-cooked stew',col:['#d08a3e','#6e2a12'],
+  img:'https://t3.ftcdn.net/jpg/03/75/06/38/360_F_375063815_9ElT5cIGrOIoG8XHsiDVITiWYRYj88x8.jpg',
+  desc:'The soul of Moroccan cooking: meat, vegetables and fruit slow-steamed in a conical clay pot until meltingly tender, perfumed with saffron, ginger and preserved lemon.',
+  ing:['Lamb or chicken','Preserved lemon','Green olives','Saffron','Ginger','Onion']},
+ {id:'couscous',name:'Couscous',ar:'كسكس',origin:'Amazigh · nationwide',type:'Friday tradition',col:['#dcb45c','#8a5a1e'],
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTmeEX4KQG4mY5jJuunxlR-dUSS284_SfnRQwMRsM_OlvDp5trL3A7Qqj4&s=1024',
+  desc:'Hand-rolled semolina steamed three times over a fragrant broth of seven vegetables and tender meat — the cherished centrepiece of the Friday family table.',
+  ing:['Semolina','Seven vegetables','Lamb or beef','Chickpeas','Turmeric','Smen butter']},
+ {id:'pastilla',name:'Pastilla',ar:'بسطيلة',origin:'Fez',type:'Sweet-savoury pie',col:['#caa050','#5e3a16'],
+  img:'https://www.lafonda.ma/wp-content/uploads/262.jpg?height=360&width=480&quality=80',
+  desc:'A Fassi masterpiece of paper-thin warqa pastry layered with spiced pigeon or chicken, almonds and egg, dusted with cinnamon and icing sugar — sweet and savoury in one bite.',
+  ing:['Warqa pastry','Pigeon or chicken','Almonds','Cinnamon','Egg','Icing sugar']},
+ {id:'harira',name:'Harira',ar:'حريرة',origin:'Nationwide · Ramadan',type:'Hearty soup',col:['#c25a3a','#5e1c14'],
+  img:'https://img.cuisineaz.com/660x495/2023/03/03/i191401-harira-au-monsieur-cuisine.jpg',
+  desc:'The velvety tomato-and-lentil soup that breaks the fast in Ramadan — rich with chickpeas, herbs and a squeeze of lemon, traditionally paired with dates and chebakia.',
+  ing:['Tomatoes','Lentils','Chickpeas','Celery & coriander','Lamb','Vermicelli']},
+ {id:'rfissa',name:'Rfissa',ar:'رفيسة',origin:'Nationwide',type:'Comfort dish',col:['#c89048','#5a3414'],
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMGGy8YxZ3ldyyixyPvLO4LTTY-01e69bb8z2QToRgtGFcUH8go5trI24&s=10',
+  desc:'Shredded msemen or day-old bread soaked in a deeply spiced lentil and chicken broth scented with fenugreek and ras el-hanout — a nourishing dish served to new mothers.',
+  ing:['Msemen / trid','Chicken','Lentils','Fenugreek','Ras el-hanout','Onions']},
+ {id:'tanjia',name:'Tanjia Marrakchia',ar:'طنجية',origin:'Marrakech',type:'Bachelor\'s stew',col:['#b86a3e','#5a2412'],
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOws7E4_3Zp2fh9f6tPJ_4BNSZzOgzvheKEL_nPDV_X8oVtiY79DPzLPi9&s=10',
+  desc:'Marrakech\'s urn-shaped specialty: beef, preserved lemon and spices sealed in a clay jar and left to cook slowly in the embers of the hammam furnace until silken.',
+  ing:['Beef shank','Preserved lemon','Cumin','Garlic','Smen','Saffron']},
+ {id:'mechoui',name:'Mechoui',ar:'مشوي',origin:'Sahara · south',type:'Roast lamb',col:['#c47a4a','#5e2a14'],
+  desc:'A whole lamb rubbed with cumin and butter and slow-roasted in an earthen pit or oven until the skin crackles and the meat falls from the bone — the feast of celebration.',
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2qQxiGCzLVP9QBvILYcMDxoPDWQXjIsmztWBrXOEizQ&s=10',
+  ing:['Whole lamb','Cumin','Butter (smen)','Salt','Garlic','Paprika']},
+ {id:'chebakia',name:'Chebakia',ar:'الشباكية',origin:'Nationwide · Ramadan',type:'Honey sweet',col:['#c98a44','#6e3a16'],
+  desc:'Flower-shaped sesame pastries fried golden, then bathed in warm honey and orange-blossom water — the glistening companion to harira on Ramadan evenings.',
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCzG6hx2_r8uZpAX_KoVJgE-Qdi2iyjMFyQc1IeZ0txZgnwczAG84h7vR8&s=10',
+  ing:['Flour','Sesame seeds','Honey','Orange-blossom water','Anise','Cinnamon']},
+ {id:'sellou',name:'Sellou',ar:'سلو',origin:'Nationwide',type:'Energy sweet',col:['#bf9a5a','#5e421e'],
+  desc:'Also called sfouf — a rich, sandy blend of toasted flour, almonds, sesame and honey pressed into a sweet mound. Long-keeping fuel for celebrations and new mothers.',
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgDOX8i9Gz7oIrPwff-RfpEdSZWLivb4CkNuWNY0nUUsjNus9wVZSeeZuD&s=10',
+  ing:['Toasted flour','Almonds','Sesame','Honey','Butter','Cinnamon']},
+ {id:'tea',name:'Moroccan Mint Tea',ar:'أتاي',origin:'Nationwide',type:'The drink of welcome',col:['#3f9a6a','#0c3a24'],
+  desc:'"Berber whisky" — green gunpowder tea steeped with fresh spearmint and plenty of sugar, poured from a height into glasses. More than a drink: the very ritual of Moroccan hospitality.',
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ4D54RMoOpSN7RchQtkfK7G9lB1RwGPZEQzOwXv8qge3qRGOz3wwOldAUP&s=10',
+  ing:['Gunpowder green tea','Fresh spearmint','Sugar','Boiling water']}
+];
+
+const CULTURE=[
+ {id:'amazigh',name:'Amazigh Heritage',ar:'ⵉⵎⴰⵣⵉⵖⵏ',cls:'big',col:['#c98a4a','#5a2e14'],
+  img:'https://images.pexels.com/photos/32852099/pexels-photo-32852099.jpeg',
+  desc:'The indigenous Amazigh (Berber) peoples are the bedrock of Moroccan identity — their language Tamazight is official, their symbols, tattoos, carpets and music alive from the Rif to the Sahara.'},
+ {id:'zellige',name:'Zellige Art',ar:'الزليج',cls:'tall',col:['#3f7fb0','#123a5e'],
+  img:'https://images.pexels.com/photos/30173693/pexels-photo-30173693.jpeg',
+  desc:'Hand-cut geometric mosaic tile, chiselled piece by piece into dazzling tessellations — the signature of Moroccan walls, fountains and palaces.'},
+ {id:'clothing',name:'Traditional Dress',ar:'الجلابة',cls:'std',col:['#b8506a','#4a1830'],
+  img:'https://images.pexels.com/photos/27457580/pexels-photo-27457580.jpeg',
+  desc:'The flowing djellaba and the embroidered caftan — worn with pride, endlessly reinvented by Moroccan couture.'},
+ {id:'crafts',name:'Handicrafts',ar:'الصناعة التقليدية',cls:'std',col:['#c08040','#5a2e12'],
+  img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTyIOdEiJqxQy4f1MofRXTeE3rfJxvIMlQX7pE9UPAvCYAfLYlVd522JDc&s=10',
+  desc:'Leather, brass, thuya wood, pottery and carpets — a living economy of guild artisans in every medina.'},
+ {id:'music',name:'Music Traditions',ar:'الموسيقى',cls:'wide',col:['#7a5ab0','#2a1a4a'],
+  img:'https://www.adrartravel.com/wp-content/uploads/2021/05/DSC_7129.jpeg',
+  desc:'From the trance of Gnawa and the refinement of Andalusian orchestras to street Chaabi and mountain Ahwash — Morocco is a country that lives in rhythm.'},
+ {id:'andalusian',name:'Andalusian Influence',ar:'الأندلس',cls:'std',col:['#c9b08a','#5a4632'],
+  img:'https://www.marrakechsunset.com/images/blog/moroccan__riad!_for_sale_in_marrakech2.jpeg',
+  desc:'Refugees from Muslim Spain brought architecture, music and gardens that still shape Fez, Tetouan and Rabat.'},
+ {id:'festivals',name:'Festivals',ar:'المهرجانات',cls:'std',col:['#c25a4a','#5a1c18'],
+  img:'https://moroccanzest.com/wp-content/uploads/2022/08/Gnawa-Music-Festival-Morocco.jpg',
+  desc:'Mawazine, the Gnaoua festival of Essaouira, the Rose Festival of Kelaa and the Cherry Festival of Sefrou color the calendar.'}
+];
+
+const GALLERY=[
+ {t:'Indigo Lanes',cat:'Medinas',col:['#5b86c4','#1b2f63'],h:240,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRAQgb2vwzGTz5IU1hKXvEsNj6pebg_oZX4POSDjZqFCeua4q75IXOQcbA&s=10'},
+ {t:'Saharan Gold',cat:'Desert',col:['#e0b15c','#8a5012'],h:300,img:'https://images.pexels.com/photos/30757346/pexels-photo-30757346.jpeg?auto=compress&cs=tinysrgb&w=600'},
+ {t:'Atlantic Spray',cat:'Coast',col:['#4aa3c7','#123a4d'],h:220,img:'https://www.naturallymorocco.co.uk/cms/destinations/32_6399d516e7d4as_0.jpg?v=1686585265'},
+ {t:'Cut Mosaic',cat:'Crafts',col:['#3f7fb0','#123a5e'],h:280,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3aJZPbUCPoij-jYC-FoU5aCm53g4IMPmxHMpp-EAvCw&s=10'},
+ {t:'A Pot of Mint',cat:'Food',col:['#3f9a6a','#0c3a24'],h:240,img:'https://www.gardeningaustraliamag.com.au/wp-content/uploads/2024/12/iStock-171106919.jpg'},
+ {t:'Carved Cedar',cat:'Architecture',col:['#c98a4a','#5a2e14'],h:320,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTzj7jsu3LnrRH_Qx2l59AeaMA-CLdykBDoWxZTU4bWAQ&s=600'},
+ {t:'Red Ramparts',cat:'Architecture',col:['#d0795a','#7d1c1f'],h:240,img:'https://d8y31irl0h6it.cloudfront.net/eyJidWNrZXQiOiJtYWRlaW5jaXR5LXN0cmFwaS11cGxvYWRzIiwia2V5IjoiRXZnZW55X01hdHZlZXZfcGhvdG9ncmFwaGVfNmFjZmQ1NGYwNC5qcGciLCJlZGl0cyI6eyJyZXNpemUiOnsiZml0IjoiY292ZXIiLCJ3aWR0aCI6MTI4MCwiaGVpZ2h0IjoxMjgwfX19'},
+ {t:'Dunes at Dusk',cat:'Desert',col:['#cf9a5c','#6e3a18'],h:280,img:'https://media.istockphoto.com/id/2226277273/photo/view-of-the-natural-reserve-of-dunes-of-maspalomas-in-gran-canaria-canary-islands-spain.jpg?s=612x612&w=0&k=20&c=8OEhyr2JFiJENODwtL6BNFyDv30uFe8_f3NXY5hvMZQ='},
+ {t:'Blue Doorway',cat:'Medinas',col:['#4f74c0','#142a55'],h:300,img:'https://i.pinimg.com/736x/77/9f/18/779f18351d92da0222c45310d4c0cc27.jpg'},
+ {t:'Spice Pyramids',cat:'Food',col:['#c25a3a','#5e1c14'],h:230,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTc24edQFon4vHWAsHmIhuGn9mz0QbgGE9O-MOK4m3E3irUZPw5yMpc-qAP&s=10'},
+ {t:'Fishing Boats',cat:'Coast',col:['#4794b8','#0e3344'],h:260,img:'https://images.pexels.com/photos/6663014/pexels-photo-6663014.jpeg?auto=compress&cs=tinysrgb&w=600'},
+ {t:'Woven Wool',cat:'Crafts',col:['#b8506a','#4a1830'],h:240,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoXUiFRkEtLw5n43QXVN-FAqR4KeTJcVVw9YA8RZJsjA&s=600'},
+ {t:'Tannery Pits',cat:'Crafts',col:['#caa050','#5e3a16'],h:300,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTskaOCcjB9-Vo1ZJrhnvGs9XWJEZ6YiJngI0UtjzHiFTrj0ZbfznEQBDQ&s=10'},
+ {t:'Palm Oasis',cat:'Desert',col:['#7a9a4a','#2e4416'],h:220,img:'https://discoverouarzazate.com/wp-content/uploads/2021/07/DSCVROZZ_low_126-scaled.jpg'},
+ {t:'Tiled Fountain',cat:'Architecture',col:['#3fa0a8','#0d4d54'],h:280,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTTxR_BuqLnNiWDVwqJod4AJVTqjICE76fM4UxS6VSCHVBf_k-7TffgohDq&s=600'},
+ {t:'Lantern Glow',cat:'Crafts',col:['#d4a23e','#6e4410'],h:250,img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSr_tKl364ZEOLm2nwejhWhvVGseD1HyH6R1DviYYReg&s=600'},
+ {t:'Whitewashed Hills',cat:'Medinas',col:['#cdb6a0','#5a4632'],h:240,img:'https://i0.wp.com/hobletsonthego.com/wp-content/uploads/2026/03/20250508-Morocco-Chefchaouen-22-HDR.jpg?fit=1000%2C667&ssl=1'},
+ {t:'Surf Crescent',cat:'Coast',col:['#48b6c0','#0d5560'],h:300,img:'https://images.pexels.com/photos/30143183/pexels-photo-30143183.jpeg?auto=compress&cs=tinysrgb&w=600'}
+];
+
+const ITINS=[
+ {days:'7 days',name:'The Imperial Loop',col:['#caa25a','#5e3a1a'],route:['Rabat','Meknes','Fez','Marrakech'],
+  desc:'Trace a thousand years of dynasties — garden capitals, monumental gates, the medieval medina of Fez and the rose city of the south.'},
+ {days:'5 days',name:'Atlantic & Argan',col:['#4aa3c7','#123a4d'],route:['Casablanca','Essaouira','Agadir'],
+  desc:'Ocean air, Art-Deco Casa, the windswept ramparts of Essaouira and golden beaches in argan country.'},
+ {days:'4 days',name:'North & Blue',col:['#5b86c4','#1b2f63'],route:['Tangier','Chefchaouen','Tetouan'],
+  desc:'Two seas, the indigo lanes of Chefchaouen and the Andalusian white medina of Tetouan beneath the Rif.'}
+];
+
+/* ===================== RENDER ===================== */
+function cityCard(c){
+  return `<article class="card" data-city="${c.id}">
+    <div class="card-art">${art(c.col[0],c.col[1],'',c.img||'')}</div>
+    <span class="card-tag">${c.region.split('·')[0].trim()}</span>
+    <span class="card-ar ar">${c.ar}</span>
+    <div class="card-body">
+      <h3>${c.name}</h3>
+      <div class="sub">Est. ${c.founded} · ${c.pop}</div>
+      <span class="more">Explore city <svg viewBox="0 0 24 24" width="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>
+  </article>`;
+}
+function renderCities(){
+  $('#citiesGrid').innerHTML=CITIES.map(cityCard).join('');
+  $('#featuredCities').innerHTML=CITIES.slice(0,6).map(cityCard).join('');
+  $('#heroCities').innerHTML=CITIES.slice(0,5).map(c=>`
+    <div class="mini-city" data-city="${c.id}">
+      <div class="mc-art" style="${artStyle(c.col[0],c.col[1])};overflow:hidden">${c.img?`<img src="${c.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display='none'">`:''}</div>
+      <div class="mc-meta"><b>${c.name}</b><span>${c.tagline}</span></div>
+      <span class="mc-go"><svg viewBox="0 0 24 24" width="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg></span>
+    </div>`).join('');
+}
+function renderLandmarks(){
+  $('#landmarksGrid').innerHTML=LANDMARKS.map(l=>`
+    <article class="card" data-landmark="${l.id}">
+      <div class="card-art">${art(l.col[0],l.col[1],'',l.img||'')}</div>
+      <span class="card-tag">${l.era}</span>
+      <div class="card-body">
+        <h3>${l.name}</h3>
+        <div class="sub">${l.city} · ${l.year}</div>
+        <span class="more">View landmark <svg viewBox="0 0 24 24" width="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+      </div>
+    </article>`).join('');
+  const tl=[...LANDMARKS].sort((a,b)=>a.sort-b.sort);
+  $('#timeline').innerHTML=tl.map((l,i)=>`
+    <div class="tl-item reveal ${i%2?'d1':''}">
+      <div class="yr">${l.year}</div>
+      <h4>${l.name}</h4>
+      <p>${l.desc}</p>
+    </div>`).join('');
+}
+function renderCuisine(){
+  $('#cuisineGrid').innerHTML=DISHES.map(d=>`
+    <article class="dish" data-dish="${d.id}">
+      <div class="dish-art" style="${artStyle(d.col[0],d.col[1])}">${d.img?`<img src="${d.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:50%;z-index:1" loading="lazy" onerror="this.style.display='none'">`:''}</div>
+      <div class="dish-meta">
+        <div class="d-top"><h3>${d.name}</h3><span class="d-ar ar">${d.ar}</span></div>
+        <div class="origin">${d.origin} · ${d.type}</div>
+        <p>${d.desc}</p>
+        <div class="ingredients">${d.ing.map(i=>`<span class="ing">${i}</span>`).join('')}</div>
+      </div>
+    </article>`).join('');
+}
+function renderCulture(){
+  $('#cultureGrid').innerHTML=CULTURE.map(c=>`
+    <div class="cult ${c.cls}">
+      <div class="ci ar">${c.ar}</div>
+      <h3>${c.name}</h3>
+      <p>${c.desc}</p>
+    </div>`).join('');
+  $$('#cultureGrid .cult').forEach((el,i)=>{
+    const c=CULTURE[i];
+    const bg=document.createElement('div');
+    bg.style.cssText=`position:absolute;inset:0;z-index:0;${artStyle(c.col[0],c.col[1])}`;
+    bg.innerHTML=`<div style="position:absolute;inset:0;opacity:.25;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:120px"></div>${c.img?`<img src="${c.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display='none'">`:``}`;
+    el.prepend(bg);
+  });
+}
+function renderGallery(){
+  const cats=['All',...new Set(GALLERY.map(g=>g.cat))];
+  $('#galleryFilters').innerHTML=cats.map((c,i)=>`<button class="filter ${i?'':'active'}" data-cat="${c}">${c}</button>`).join('');
+  paintGallery('All');
+}
+function paintGallery(cat){
+  const items=GALLERY.filter(g=>cat==='All'||g.cat===cat);
+  $('#galleryGrid').innerHTML=items.map((g)=>{
+    const idx=GALLERY.indexOf(g);
+    return `<div class="tile" data-tile="${idx}">
+      <div class="tile-art" style="height:${g.h}px;${artStyle(g.col[0],g.col[1])};overflow:hidden">
+        <div style="position:absolute;inset:0;opacity:.22;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:110px;z-index:0"></div>
+        ${g.img?`<img src="${g.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" loading="lazy" onerror="this.style.display='none'">`:''}
+      </div>
+      <div class="tile-cap"><span>${g.cat}</span><b>${g.t}</b></div>
+    </div>`;
+  }).join('');
+}
+function renderItins(){
+  $('#itins').innerHTML=ITINS.map(it=>`
+    <div class="itin reveal">
+      <div class="itin-top" style="${artStyle(it.col[0],it.col[1])}">
+        <span class="days">${it.days}</span><h3>${it.name}</h3>
+      </div>
+      <div class="itin-body">
+        <div class="route">${it.route.map((r,i)=>`${i?'<span>→</span> ':''}${r}`).join(' ')}</div>
+        <p>${it.desc}</p>
+      </div>
+    </div>`).join('');
+}
+
+/* ---- dividers / footer zellige ---- */
+function paintZellige(){
+  const url=`data:image/svg+xml,${ZLINE}`;
+  $$('[data-zellige]').forEach(el=>el.style.backgroundImage=`url('${url}')`);
+}
+
+/* ===================== MODAL ===================== */
+const modal=$('#modal'),modalCard=$('#modalCard');
+function openModal(html){modalCard.innerHTML=html;modal.classList.add('open');document.body.classList.add('locked');modalCard.scrollTop=0;}
+function closeModal(){modal.classList.remove('open');document.body.classList.remove('locked');}
+function cityModal(c){
+  const heroStyle=c.img?`position:relative;overflow:hidden`:`${artStyle(c.col[0],c.col[1])}`;
+  const heroImg=c.img?`<div style="position:absolute;inset:0;${artStyle(c.col[0],c.col[1])}"></div><img class="art-photo loaded" src="${c.img}" alt="${c.name}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1">`:``;
+  return `<button class="modal-close" data-close><svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  <div class="modal-hero" style="${heroStyle}">
+    ${heroImg}
+    <div style="position:absolute;inset:0;opacity:.22;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:130px;z-index:2"></div>
+    <div class="mh-txt" style="z-index:3"><div class="ar" style="color:var(--gold-bright);font-size:1.4rem">${c.ar}</div><h2>${c.name}</h2>
+      <div class="mh-sub"><span>📍 ${c.region}</span><span>🏛️ Founded ${c.founded}</span><span>👥 ${c.pop}</span></div></div>
+  </div>
+  <div class="modal-body">
+    <p class="lead">${c.history}</p>
+    <h4>Cultural highlights</h4>
+    <div class="chips">${c.culture.map(x=>`<span class="chip">${x}</span>`).join('')}</div>
+    <h4>Local traditions</h4>
+    <div class="chips">${c.traditions.map(x=>`<span class="chip"><b>•</b> ${x}</span>`).join('')}</div>
+    <h4>Photo gallery</h4>
+    <div class="mini-gallery">${[0,1,2,3].map(i=>`<div class="mg" style="${artStyle(c.col[i%2],c.col[(i+1)%2])}">${c.gallery&&c.gallery[i]?`<img src="${c.gallery[i]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" loading="lazy" onerror="this.style.display='none'">`:`<div style="position:absolute;inset:0;opacity:.25;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:80px"></div>`}</div>`).join('')}</div>
+    <h4>Best attractions</h4>
+    <div>${c.att.map((a,i)=>`<div class="attraction"><span class="an">0${i+1}</span><div><b>${a[0]}</b><p>${a[1]}</p></div></div>`).join('')}</div>
+  </div>`;
+}
+function landmarkModal(l){
+  return `<button class="modal-close" data-close><svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+   <div class="modal-hero" style="${l.img?'position:relative;overflow:hidden':artStyle(l.col[0],l.col[1])}">
+      ${l.img?`<div style="position:absolute;inset:0;${artStyle(l.col[0],l.col[1])}"></div><img src="${l.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" onerror="this.style.display='none'">`:''}
+      <div style="position:absolute;inset:0;opacity:.22;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:130px;z-index:2"></div>
+    <div class="mh-txt"><h2>${l.name}</h2><div class="mh-sub"><span>📍 ${l.city}</span><span>🗓️ ${l.year}</span><span>🏺 ${l.era} era</span></div></div>
+  </div>
+  <div class="modal-body"><p class="lead">${l.desc}</p>
+    <h4>At a glance</h4>
+    <div class="chips"><span class="chip"><b>Era:</b> ${l.era}</span><span class="chip"><b>Built:</b> ${l.year}</span><span class="chip"><b>Location:</b> ${l.city}</span></div>
+    <h4>Gallery</h4>
+    <div class="mini-gallery">${[0,1,2,3].map(i=>`<div class="mg" style="${artStyle(l.col[i%2],l.col[(i+1)%2])}">${l.gallery&&l.gallery[i]?`<img src="${l.gallery[i]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" loading="lazy" onerror="this.style.display='none'">`:`<div style="position:absolute;inset:0;opacity:.25;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:80px"></div>`}</div>`).join('')}</div>
+  </div>`;
+}
+function dishModal(d){
+  return `<button class="modal-close" data-close><svg viewBox="0 0 24 24" width="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+  <div class="modal-hero" style="${d.img?'position:relative;overflow:hidden':artStyle(d.col[0],d.col[1])}">
+    ${d.img?`<div style="position:absolute;inset:0;${artStyle(d.col[0],d.col[1])}"></div><img src="${d.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" onerror="this.style.display='none'">`:''}
+    <div style="position:absolute;inset:0;opacity:.22;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:130px;z-index:2"></div>
+    <div class="mh-txt"><div class="ar" style="color:var(--gold-bright);font-size:1.4rem">${d.ar}</div><h2>${d.name}</h2><div class="mh-sub"><span>📍 ${d.origin}</span><span>🍽️ ${d.type}</span></div></div>
+  </div>
+  <div class="modal-body"><p class="lead">${d.desc}</p>
+    <h4>Ingredients</h4>
+    <div class="chips">${d.ing.map(i=>`<span class="chip">${i}</span>`).join('')}</div>
+  </div>`;
+}
+
+/* ===================== MAP ===================== */
+function buildMap(){
+  const svg=$('#mapSvg');
+  let html=`<image href="images/morocco-map.png" x="0" y="0" width="520" height="620" preserveAspectRatio="xMidYMid meet" opacity="0.9"/>`;
+  CITIES.forEach(c=>{
+    html+=`<g class="map-node" data-city="${c.id}" transform="translate(${c.x},${c.y})">
+      <circle class="halo" r="8"/><circle class="dot" r="5.5"/>
+      <text x="10" y="3">${c.name}</text></g>`;
+  });
+  svg.innerHTML=html;
+  selectMapCity(CITIES[0]);
+}
+function selectMapCity(c){
+  $$('#mapSvg .map-node').forEach(n=>n.classList.toggle('sel',n.dataset.city===c.id));
+  $('#mapInfo').innerHTML=`
+    <div class="mi-art" style="${artStyle(c.col[0],c.col[1])};overflow:hidden">${c.img?`<img src="${c.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display='none'">`:''}<div style="position:absolute;inset:0;opacity:.24;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:90px"></div></div>
+    <div class="mi-region">${c.region}</div>
+    <h3>${c.name} <span class="ar" style="font-size:1.3rem;color:var(--gold)">${c.ar}</span></h3>
+    <p>${c.tagline}. ${c.history.split('.')[0]}.</p>
+    <div class="mi-stats"><div><b>${c.founded}</b><span>FOUNDED</span></div><div><b>${c.pop}</b><span>POPULATION</span></div></div>
+    <button class="btn btn-gold" style="margin-top:18px;width:100%;justify-content:center" data-city="${c.id}">Explore ${c.name} <svg viewBox="0 0 24 24" width="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>`;
+}
+
+/* ===================== LIGHTBOX ===================== */
+const lightbox=$('#lightbox');let lbIndex=0,lbList=[];
+function openLightbox(i){
+  lbList=GALLERY;lbIndex=i;paintLightbox();
+  lightbox.classList.add('open');document.body.classList.add('locked');
+}
+function paintLightbox(){
+  const g=lbList[lbIndex];
+  $('#lbArt').innerHTML=`<div style="position:absolute;inset:0;${artStyle(g.col[0],g.col[1])}"><div style="position:absolute;inset:0;opacity:.2;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:140px"></div></div>
+    ${g.img?`<img src="${g.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" onerror="this.style.display='none'">`:''}
+    <div class="lb-cap" style="z-index:2"><span style="color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-size:.78rem">${g.cat}</span><b>${g.t}</b></div>`;
+}
+function closeLightbox(){lightbox.classList.remove('open');document.body.classList.remove('locked');}
+
+/* ===================== AI RECOMMENDER ===================== */
+const aiState={vibe:null,pace:null,len:null};
+function aiSetup(){
+  $$('.opts').forEach(group=>{
+    group.addEventListener('click',e=>{
+      const b=e.target.closest('.opt');if(!b)return;
+      [...group.children].forEach(o=>o.classList.remove('sel'));
+      b.classList.add('sel');aiState[group.dataset.group]=b.dataset.v;
+    });
+  });
+  $('#aiRun').addEventListener('click',aiRun);
+}
+const VIBE_MAP={
+  history:['fez','marrakech','meknes'],
+  beach:['essaouira','agadir','dakhla'],
+  mountains:['chefchaouen','marrakech','tetouan'],
+  food:['marrakech','fez','tangier'],
+  calm:['chefchaouen','essaouira','tetouan']
+};
+function aiRun(){
+  const out=$('#aiOut');
+  if(!aiState.vibe){out.innerHTML=`<div class="ai-typing">Pick at least what draws you to Morocco, and I'll plan your route…</div>`;return;}
+  out.innerHTML=`<div class="ai-typing">Atlas is mapping your journey<span id="dots">…</span></div>`;
+  let n=0;const dots=$('#dots');
+  const iv=setInterval(()=>{n=(n+1)%4;if(dots)dots.textContent='.'.repeat(n||1);},250);
+  setTimeout(()=>{
+    clearInterval(iv);
+    const ids=VIBE_MAP[aiState.vibe];
+    const picks=ids.map(id=>CITIES.find(c=>c.id===id));
+    const paceTxt={slow:'a slow, soulful',balanced:'a balanced',packed:'an action-packed'}[aiState.pace||'balanced'];
+    const lenTxt={short:'a short escape',week:'a full week',long:'an unhurried 10+ days'}[aiState.len||'week'];
+    out.innerHTML=`<div style="font-size:.92rem;color:var(--text-soft);margin-bottom:14px">For ${paceTxt} ${lenTxt} drawn to <b style="color:var(--gold)">${aiState.vibe}</b>, here's your Morocco:</div>
+      ${picks.map((c,i)=>`<div class="ai-rec" data-city="${c.id}" style="animation-delay:${i*.12}s">
+        <div class="ar-art" style="${artStyle(c.col[0],c.col[1])};overflow:hidden">${c.img?`<img src="${c.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display='none'">`:''}</div>
+        <div><b>${c.name}</b><span>${c.tagline}</span></div>
+        <span class="match">${98-i*5}%</span></div>`).join('')}
+      <div style="font-size:.78rem;color:var(--text-faint);margin-top:10px">Prototype concierge · matches are illustrative</div>`;
+  },1100);
+}
+
+/* ===================== NAV / ROUTER ===================== */
+function go(page){
+  $$('.page').forEach(p=>p.classList.remove('active'));
+  const el=$('#page-'+page);if(!el)return;
+  el.classList.add('active');
+  $$('#menu a').forEach(a=>a.classList.toggle('active',a.dataset.go===page));
+  window.scrollTo({top:0,behavior:'instant'in window?'instant':'auto'});
+  setTimeout(initReveal,40);
+  if(page==='map')setTimeout(()=>{if(!$('#mapSvg').innerHTML)buildMap();},50);
+}
+document.addEventListener('click',e=>{
+  const goEl=e.target.closest('[data-go]');
+  if(goEl){e.preventDefault();go(goEl.dataset.go);closeDrawer();return;}
+  const city=e.target.closest('[data-city]');
+  if(city){const c=CITIES.find(x=>x.id===city.dataset.city);
+    if(city.classList.contains('map-node')||city.closest('#mapInfo')&&city.tagName!=='BUTTON'){}
+    if(city.classList.contains('map-node')){selectMapCity(c);return;}
+    openModal(cityModal(c));return;}
+  const lm=e.target.closest('[data-landmark]');
+  if(lm){openModal(landmarkModal(LANDMARKS.find(x=>x.id===lm.dataset.landmark)));return;}
+  const dish=e.target.closest('[data-dish]');
+  if(dish){openModal(dishModal(DISHES.find(x=>x.id===dish.dataset.dish)));return;}
+  const tile=e.target.closest('[data-tile]');
+  if(tile){openLightbox(+tile.dataset.tile);return;}
+  const filter=e.target.closest('.filter');
+  if(filter){$$('.filter').forEach(f=>f.classList.remove('active'));filter.classList.add('active');paintGallery(filter.dataset.cat);return;}
+  if(e.target.closest('[data-close]'))closeModal();
+});
+
+/* drawer */
+const drawer=$('#drawer');
+function closeDrawer(){drawer.classList.remove('open');}
+$('#burger').addEventListener('click',()=>drawer.classList.toggle('open'));
+drawer.addEventListener('click',e=>{if(e.target===drawer)closeDrawer();});
+
+/* theme */
+let dark=true;
+$('#themeBtn').addEventListener('click',()=>{
+  dark=!dark;document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+  $('#themeIcon').innerHTML=dark
+    ?'<path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/>'
+    :'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/>';
+});
+
+/* search */
+const sOverlay=$('#searchOverlay'),sInput=$('#searchInput'),sResults=$('#searchResults');
+const SEARCH_INDEX=[
+  ...CITIES.map(c=>({type:'City',id:c.id,name:c.name,sub:c.region,col:c.col,kind:'city',img:c.img||''})),
+  ...LANDMARKS.map(l=>({type:'Landmark',id:l.id,name:l.name,sub:l.city+' · '+l.year,col:l.col,kind:'landmark',img:''})),
+  ...DISHES.map(d=>({type:'Dish',id:d.id,name:d.name,sub:d.origin,col:d.col,kind:'dish',img:''}))
+];
+function openSearch(){sOverlay.classList.add('open');document.body.classList.add('locked');setTimeout(()=>sInput.focus(),100);runSearch('');}
+function closeSearch(){sOverlay.classList.remove('open');document.body.classList.remove('locked');sInput.value='';}
+function runSearch(q){
+  q=q.trim().toLowerCase();
+  const res=q?SEARCH_INDEX.filter(i=>i.name.toLowerCase().includes(q)||i.sub.toLowerCase().includes(q)||i.type.toLowerCase().includes(q)):SEARCH_INDEX.slice(0,6);
+  sResults.innerHTML=res.length?res.map(r=>`
+    <div class="sr" data-search="${r.kind}:${r.id}">
+      <div class="sr-art" style="${artStyle(r.col[0],r.col[1])};overflow:hidden">${r.img?`<img src="${r.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy" onerror="this.style.display='none'">`:''}</div>
+      <div><b>${r.name}</b><span>${r.sub}</span></div>
+      <span class="sr-type">${r.type}</span>
+    </div>`).join(''):`<div class="sr-empty">No results for "${q}". Try “Fez”, “tagine” or “Volubilis”.</div>`;
+}
+$('#searchBtn').addEventListener('click',openSearch);
+$('#searchClose').addEventListener('click',closeSearch);
+sOverlay.addEventListener('click',e=>{if(e.target===sOverlay)closeSearch();});
+sInput.addEventListener('input',e=>runSearch(e.target.value));
+sResults.addEventListener('click',e=>{
+  const r=e.target.closest('[data-search]');if(!r)return;
+  const [kind,id]=r.dataset.search.split(':');closeSearch();
+  if(kind==='city')openModal(cityModal(CITIES.find(c=>c.id===id)));
+  if(kind==='landmark'){go('landmarks');openModal(landmarkModal(LANDMARKS.find(c=>c.id===id)));}
+  if(kind==='dish'){go('cuisine');openModal(dishModal(DISHES.find(c=>c.id===id)));}
+});
+
+/* lightbox controls */
+$('#lbClose').addEventListener('click',closeLightbox);
+$('#lbPrev').addEventListener('click',()=>{lbIndex=(lbIndex-1+lbList.length)%lbList.length;paintLightbox();});
+$('#lbNext').addEventListener('click',()=>{lbIndex=(lbIndex+1)%lbList.length;paintLightbox();});
+lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeLightbox();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();closeLightbox();closeSearch();closeDrawer();}
+  if(lightbox.classList.contains('open')){
+    if(e.key==='ArrowLeft')$('#lbPrev').click();
+    if(e.key==='ArrowRight')$('#lbNext').click();
+  }
+  if((e.key==='k'||e.key==='/')&&(e.metaKey||e.ctrlKey||e.key==='/')){e.preventDefault();openSearch();}
+});
+
+/* ===================== ATMOSPHERE ===================== */
+/* stars */
+(function(){let h='';for(let i=0;i<60;i++){h+=`<span class="star" style="top:${Math.random()*55}%;left:${Math.random()*100}%;animation-delay:${Math.random()*4}s"></span>`;}$('#stars').innerHTML=h;})();
+/* dust motes */
+(function(){let h='';for(let i=0;i<26;i++){const d=6+Math.random()*10;h+=`<span class="mote" style="left:${Math.random()*100}%;animation-duration:${d}s;animation-delay:${Math.random()*d}s;opacity:${.3+Math.random()*.5}"></span>`;}$('#dust').innerHTML=h;})();
+
+/* reveal observer */
+let io;
+function initReveal(){
+  $$('.reveal').forEach(el=>{
+    if(el.dataset.seen)return;
+    io.observe(el);
+  });
+}
+io=new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');en.target.dataset.seen=1;io.unobserve(en.target);
+    if(en.target.querySelector('[data-count]')||en.target.matches('.stats'))en.target.querySelectorAll?.('[data-count]');}});
+},{threshold:.14,rootMargin:'0px 0px -40px 0px'});
+
+/* counters */
+const countIO=new IntersectionObserver((entries)=>{
+  entries.forEach(en=>{
+    if(!en.isIntersecting)return;
+    const el=en.target,target=+el.dataset.count,suf=el.dataset.suffix||'';
+    let cur=0;const step=target/60;
+    const t=setInterval(()=>{cur+=step;if(cur>=target){cur=target;clearInterval(t);}
+      el.textContent=Math.floor(cur).toLocaleString()+suf;},20);
+    countIO.unobserve(el);
+  });
+},{threshold:.5});
+$$('[data-count]').forEach(el=>countIO.observe(el));
+
+/* parallax + header + scrollbar + totop */
+const header=$('#header'),scrollbar=$('.scrollbar'),totop=$('#totop');
+function onScroll(){
+  const y=window.scrollY;
+  header.classList.toggle('scrolled',y>40);
+  totop.classList.toggle('show',y>600);
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  scrollbar.style.width=(y/h*100)+'%';
+  $$('[data-parallax]').forEach(el=>{
+    const sp=+el.dataset.parallax;el.style.transform=`translateY(${y*sp}px)`;
+  });
+}
+window.addEventListener('scroll',onScroll,{passive:true});
+totop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+/* mouse parallax on hero */
+const hero=$('.hero');
+if(window.matchMedia('(hover:hover)').matches){
+  hero.addEventListener('mousemove',e=>{
+    const cx=(e.clientX/window.innerWidth-.5),cy=(e.clientY/window.innerHeight-.5);
+    $('.sun').style.marginLeft=cx*30+'px';$('.sun').style.marginTop=cy*18+'px';
+  });
+}
+
+/* custom cursor */
+(function(){
+  if(!window.matchMedia('(hover:hover)').matches)return;
+  const cur=$('.cursor'),dot=$('.cursor-dot');
+  let mx=0,my=0,cxp=0,cyp=0;
+  window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;});
+  (function loop(){cxp+=(mx-cxp)*.18;cyp+=(my-cyp)*.18;cur.style.transform=`translate(${cxp}px,${cyp}px) translate(-50%,-50%)`;requestAnimationFrame(loop);})();
+  document.addEventListener('mouseover',e=>{
+    if(e.target.closest('a,button,.card,.dish,.tile,.cult,.opt,.mini-city,.map-node,.sr,.ai-rec,.filter,[data-go],[data-city]'))cur.classList.add('hot');
+    else cur.classList.remove('hot');
+  });
+})();
+
+/* ===================== TRANSLATION ===================== */
+const TRANSLATIONS = {
+  fr: {
+    heroTitle: ['Découvrez le', 'Royaume', 'du Maroc'],
+    heroSub: "Des sommets enneigés de l'Atlas aux dunes safranées du Sahara, des médinas impériales à l'Atlantique sauvage — mille ans de lumière, de couleur et d'accueil vous attendent.",
+    exploreBtn: 'Explorer les Villes',
+    mapBtn: 'Ouvrir la Carte',
+    statsEyebrow: 'Le Royaume en chiffres',
+    statsTitle: 'Un pays mesuré en <span class="em">siècles & couleurs</span>',
+    stat1: 'Villes à explorer', stat2: 'Sites UNESCO', stat3: 'Kilomètres de côtes', stat4: "Ans d'histoire impériale",
+    featEyebrow: 'Destinations phares',
+    featTitle: 'Douze villes, <span class="em">une histoire sans fin</span>',
+    featDesc: "Chacune porte son propre dialecte de lumière — les murs roses de Marrakech, les ruelles bleues de Chefchaouen, les embruns d'Essaouira.",
+    seeAll: 'Voir les 12 villes',
+    navHome:'Accueil',navCities:'Villes',navLandmarks:'Monuments',navCuisine:'Cuisine',navCulture:'Culture',navMap:'Carte',navGallery:'Galerie',navGuide:'Guide',
+    essential:'Villes essentielles',wanderTitle:'Où allez-vous <span class="em">voyager ?</span>',wanderCard:'Top destinations',conciergeEyebrow:'Concierge · prototype',conciergeTitle:'Laissez <span class="em">Atlas</span> planifier votre voyage',conciergeDesc:'Dites-nous votre humeur et votre rythme — notre moteur vous propose les villes qui vous correspondent.',
+    conciergeVibe:'Qu\'est-ce qui vous attire au Maroc ?',conciergePace:'Votre rythme de voyage',conciergeLen:'Durée du séjour',conciergeBtn:'Trouver mon Maroc',
+    footExplore:'Explorer',footPlan:'Planifier',footRegions:'Régions',footDesc:'Un voyage immersif à travers le Royaume du Maroc — ses villes impériales, ses médinas vivantes et sa lumière saharienne.',footBottom:'Discover Morocco — un concept touristique. Conçu avec soin.',citiesPageTitle:'Douze Joyaux Impériaux & <span style="font-style:italic;color:var(--gold)">Côtiers</span>',
+citiesPageDesc:'Parcourez des remparts rouges du sud aux ports blancs du nord. Cliquez sur une ville pour découvrir son histoire, sa culture et ses plus beaux sites.',
+citiesEyebrow:'L\'Explorateur de Villes',
+landmarksPageTitle:'Là où la pierre <span style="font-style:italic;color:var(--gold)">se souvient</span>',
+landmarksPageDesc:'Cités romaines, minarets almohades et palais des mille et une nuits — dix monuments qui retracent l\'arc impérial du Maroc.',
+landmarksEyebrow:'Monuments Historiques',
+timelineEyebrow:'Une chronologie des empires',timelineTitle:'Douze siècles de <span class="em">construction</span>',
+cuisinePageTitle:'Une table dressée de <span style="font-style:italic;color:var(--gold)">safran & fumée</span>',
+cuisinePageDesc:'Tajines mijotés, couscous du vendredi et la cérémonie du thé à la menthe — dix plats qui racontent l\'histoire d\'une cuisine généreuse.',
+cuisineEyebrow:'Cuisine Marocaine',
+culturePageTitle:'Une <span style="font-style:italic;color:var(--gold)">mosaïque</span> vivante',
+culturePageDesc:'Racines amazighes, grâce andalouse, rythme saharien et commerce atlantique — tissés ensemble depuis mille ans.',
+cultureEyebrow:'Culture Marocaine',
+mapPageTitle:'Tracez votre <span style="font-style:italic;color:var(--gold)">itinéraire</span>',
+mapPageDesc:'Cliquez sur un point lumineux pour révéler chaque ville. De Tanger au détroit jusqu\'à Dakhla sur l\'Atlantique saharien.',
+mapEyebrow:'Carte Interactive',
+galleryPageTitle:'Le Maroc en <span style="font-style:italic;color:var(--gold)">couleurs</span>',
+galleryPageDesc:'Un mur de lumière — portes, dunes, zellige et thé. Filtrez par thème, cliquez pour agrandir.',
+galleryEyebrow:'Galerie Média',
+guidePageTitle:'Tout pour le <span style="font-style:italic;color:var(--gold)">voyage parfait</span>',
+guidePageDesc:'Quand venir, comment se déplacer, quoi savoir — et trois itinéraires prêts à travers le Royaume.',
+guideEyebrow:'Guide de Voyage',
+guideBestTime:'Meilleure période',guideBestTimeDesc:'Le printemps et l\'automne sont idéaux — journées douces, belle lumière, moins de monde.',
+guideTransport:'Se déplacer',guideTransportDesc:'Le Maroc se parcourt facilement — trains rapides au nord, grands taxis partout ailleurs.',
+guideKnow:'Bon à savoir',guideKnowDesc:'Quelques grâces facilitent tout voyage à travers le Royaume.',
+seasonSpring:'Printemps',seasonSummer:'Été',seasonAutumn:'Automne',seasonWinter:'Hiver',
+seasonSpringDesc:'Fleurs, vallées vertes, médinas parfaites',seasonSummerDesc:'Brises côtières, festivals, longues soirées',
+seasonAutumnDesc:'Lumière dorée, récolte des dattes, nuits désertiques',seasonWinterDesc:'Neige de l\'Atlas, sud chaud, souks calmes',
+seasonTitle:'Une saison pour chaque <span class="em">humeur</span>',
+routesTitle:'Trois routes, <span class="em">un royaume</span>',
+filterAll:'Tous'   
+  },
+  en: {
+    heroTitle: ['Discover the', 'Kingdom', 'of Morocco'],
+    heroSub: 'From the snow-dusted Atlas to the saffron dunes of the Sahara, from imperial medinas to the wild Atlantic — a thousand years of light, colour and welcome await.',
+    exploreBtn: 'Explore the Cities',
+    mapBtn: 'Open the Map',
+    statsEyebrow: 'The Kingdom in numbers',
+    statsTitle: 'A land measured in <span class="em">centuries & colour</span>',
+    stat1: 'Cities to explore', stat2: 'UNESCO World Heritage sites', stat3: 'Kilometres of coastline', stat4: 'Years of imperial history',
+    featEyebrow: 'Featured destinations',
+    featTitle: 'Twelve cities, <span class="em">one endless story</span>',
+    featDesc: 'Each carries its own dialect of light — the rose walls of Marrakech, the blue lanes of Chefchaouen, the Atlantic spray of Essaouira.',
+    seeAll: 'See all 12 cities',
+    navHome:'Home',navCities:'Cities',navLandmarks:'Landmarks',navCuisine:'Cuisine',navCulture:'Culture',navMap:'Map',navGallery:'Gallery',navGuide:'Travel Guide',
+    essential:'Essential cities',wanderTitle:'Where will you <span class="em">wander?</span>',wanderCard:'Top destinations',conciergeEyebrow:'Concierge · mockup',conciergeTitle:'Let the <span class="em">Atlas guide</span> plan your journey',conciergeDesc:'Tell us your mood and pace — our recommendation engine matches you to the cities that fit.',
+    conciergeVibe:'What draws you to Morocco?',conciergePace:'Your travel pace',conciergeLen:'Trip length',conciergeBtn:'Find my Morocco',
+    footExplore:'Explore',footPlan:'Plan',footRegions:'Regions',footDesc:'An immersive journey through the Kingdom of Morocco — its imperial cities, living medinas and Saharan light.',footBottom:'Discover Morocco — a showcase tourism concept. Crafted with care.',citiesPageTitle:'Twelve Imperial & <span style="font-style:italic;color:var(--gold)">Coastal Jewels</span>',
+citiesPageDesc:'Wander from the red ramparts of the south to the whitewashed harbours of the north. Tap any city to step inside its history, culture and finest sights.',
+citiesEyebrow:'The Cities Explorer',
+landmarksPageTitle:'Where stone <span style="font-style:italic;color:var(--gold)">remembers</span>',
+landmarksPageDesc:'Roman cities, Almohad minarets and palaces of a thousand and one nights — ten monuments that chart Morocco\'s long imperial arc.',
+landmarksEyebrow:'Historical Landmarks',
+timelineEyebrow:'A timeline of empires',timelineTitle:'Twelve centuries of <span class="em">building</span>',
+cuisinePageTitle:'A table set with <span style="font-style:italic;color:var(--gold)">saffron & smoke</span>',
+cuisinePageDesc:'Slow-cooked tagines, golden couscous Fridays and the ceremony of mint tea — ten dishes that tell the story of a generous kitchen.',
+cuisineEyebrow:'Moroccan Cuisine',
+culturePageTitle:'A living <span style="font-style:italic;color:var(--gold)">mosaic</span>',
+culturePageDesc:'Amazigh roots, Andalusian grace, Saharan rhythm and Atlantic trade — woven together over a thousand years.',
+cultureEyebrow:'Moroccan Culture',
+mapPageTitle:'Trace your <span style="font-style:italic;color:var(--gold)">route</span>',
+mapPageDesc:'Click a glowing node to reveal each city. From Tangier on the strait to Dakhla on the Saharan Atlantic.',
+mapEyebrow:'Interactive Map',
+galleryPageTitle:'Morocco in <span style="font-style:italic;color:var(--gold)">full colour</span>',
+galleryPageDesc:'A curated wall of light — doorways, dunes, tilework and tea. Filter by theme, tap to enlarge.',
+galleryEyebrow:'Media Gallery',
+guidePageTitle:'Everything for the <span style="font-style:italic;color:var(--gold)">perfect trip</span>',
+guidePageDesc:'When to come, how to move, what to know — and three ready-made routes through the Kingdom.',
+guideEyebrow:'Travel Guide',
+guideBestTime:'Best time to visit',guideBestTimeDesc:'Spring and autumn are the sweet spots — warm days, soft light, fewer crowds.',
+guideTransport:'Getting around',guideTransportDesc:'Morocco moves easily — fast trains link the north, grand taxis fill the gaps.',
+guideKnow:'Good to know',guideKnowDesc:'A few graces smooth every journey through the Kingdom.',
+seasonSpring:'Spring',seasonSummer:'Summer',seasonAutumn:'Autumn',seasonWinter:'Winter',
+seasonSpringDesc:'Blossom, green valleys, perfect medinas',seasonSummerDesc:'Coastal breezes, festivals, long evenings',
+seasonAutumnDesc:'Golden light, date harvest, desert nights',seasonWinterDesc:'Atlas snow, warm south, quiet souks',
+seasonTitle:'A season for every <span class="em">mood</span>',
+routesTitle:'Three routes, <span class="em">one kingdom</span>',
+filterAll:'All'
+  },
+  ar: {
+    heroTitle: ['اكتشفوا', 'المملكة', 'المغربية'],
+    heroSub: 'من قمم الأطلس المكللة بالثلوج إلى كثبان الصحراء الذهبية، ومن المدن العتيقة إلى المحيط الأطلسي — ألف سنة من النور والألوان والضيافة في انتظاركم.',
+    exploreBtn: 'استكشف المدن',
+    mapBtn: 'افتح الخريطة',
+    statsEyebrow: 'المملكة بالأرقام',
+    statsTitle: 'أرض تُقاس بـ<span class="em">القرون والألوان</span>',
+    stat1: 'مدن للاستكشاف', stat2: 'مواقع تراث عالمي', stat3: 'كلم من السواحل', stat4: 'سنة من التاريخ',
+    featEyebrow: 'وجهات مميزة',
+    featTitle: 'اثنتا عشرة مدينة، <span class="em">قصة بلا نهاية</span>',
+    featDesc: 'كل مدينة تحمل لونها الخاص — أسوار مراكش الحمراء، أزقة شفشاون الزرقاء، ورذاذ الصويرة الأطلسي.',
+    seeAll: 'شاهد الـ12 مدينة',
+    navHome:'الرئيسية',navCities:'المدن',navLandmarks:'المعالم',navCuisine:'المطبخ',navCulture:'الثقافة',navMap:'الخريطة',navGallery:'المعرض',navGuide:'دليل السفر',
+    essential:'المدن الأساسية',wanderTitle:'أين ستسافر <span class="em">؟</span>',wanderCard:'أفضل الوجهات',conciergeEyebrow:'مرشد · نموذج',conciergeTitle:'دع <span class="em">أطلس</span> يخطط رحلتك',conciergeDesc:'أخبرنا بمزاجك وإيقاعك — محركنا يقترح عليك المدن المناسبة.',
+    conciergeVibe:'ما الذي يجذبك إلى المغرب؟',conciergePace:'إيقاع سفرك',conciergeLen:'مدة الرحلة',conciergeBtn:'اعثر على مغربي',
+    footExplore:'استكشف',footPlan:'خطط',footRegions:'المناطق',footDesc:'رحلة غامرة عبر المملكة المغربية — مدنها العريقة ومديناتها الحية ونورها الصحراوي.',footBottom:'Discover Morocco — مفهوم سياحي. صُنع بعناية.',citiesPageTitle:'اثنتا عشرة جوهرة <span style="font-style:italic;color:var(--gold)">إمبراطورية وساحلية</span>',
+citiesPageDesc:'تجولوا من الأسوار الحمراء في الجنوب إلى الموانئ البيضاء في الشمال. انقروا على أي مدينة لاكتشاف تاريخها وثقافتها.',
+citiesEyebrow:'مستكشف المدن',
+landmarksPageTitle:'حيث يتذكر <span style="font-style:italic;color:var(--gold)">الحجر</span>',
+landmarksPageDesc:'مدن رومانية ومآذن موحدية وقصور ألف ليلة وليلة — عشرة معالم ترسم القوس الإمبراطوري للمغرب.',
+landmarksEyebrow:'المعالم التاريخية',
+timelineEyebrow:'جدول زمني للإمبراطوريات',timelineTitle:'اثنا عشر قرناً من <span class="em">البناء</span>',
+cuisinePageTitle:'مائدة بـ<span style="font-style:italic;color:var(--gold)">الزعفران والدخان</span>',
+cuisinePageDesc:'طاجين مطهو ببطء، كسكس الجمعة وحفل الشاي بالنعناع — عشرة أطباق تحكي قصة مطبخ كريم.',
+cuisineEyebrow:'المطبخ المغربي',
+culturePageTitle:'<span style="font-style:italic;color:var(--gold)">فسيفساء</span> حية',
+culturePageDesc:'جذور أمازيغية، أناقة أندلسية، إيقاع صحراوي وتجارة أطلسية — نسجت معاً على مدى ألف عام.',
+cultureEyebrow:'الثقافة المغربية',
+mapPageTitle:'ارسم <span style="font-style:italic;color:var(--gold)">مسارك</span>',
+mapPageDesc:'انقر على نقطة مضيئة لاكتشاف كل مدينة. من طنجة على المضيق إلى الداخلة على الأطلسي الصحراوي.',
+mapEyebrow:'الخريطة التفاعلية',
+galleryPageTitle:'المغرب <span style="font-style:italic;color:var(--gold)">بالألوان</span>',
+galleryPageDesc:'جدار من النور — أبواب، كثبان، زليج وشاي. صفّ حسب الموضوع، انقر للتكبير.',
+galleryEyebrow:'معرض الوسائط',
+guidePageTitle:'كل شيء لـ<span style="font-style:italic;color:var(--gold)">الرحلة المثالية</span>',
+guidePageDesc:'متى تأتي، كيف تتنقل، ماذا تعرف — وثلاثة مسارات جاهزة عبر المملكة.',
+guideEyebrow:'دليل السفر',
+guideBestTime:'أفضل وقت للزيارة',guideBestTimeDesc:'الربيع والخريف هما الأفضل — أيام دافئة، ضوء ناعم، زحام أقل.',
+guideTransport:'التنقل',guideTransportDesc:'المغرب سهل التنقل — قطارات سريعة في الشمال، طاكسيات كبيرة في كل مكان.',
+guideKnow:'معلومات مفيدة',guideKnowDesc:'بعض النصائح تسهل كل رحلة عبر المملكة.',
+seasonSpring:'الربيع',seasonSummer:'الصيف',seasonAutumn:'الخريف',seasonWinter:'الشتاء',
+seasonSpringDesc:'أزهار، وديان خضراء، مدن عتيقة مثالية',seasonSummerDesc:'نسائم ساحلية، مهرجانات، أمسيات طويلة',
+seasonAutumnDesc:'ضوء ذهبي، موسم التمور، ليالي صحراوية',seasonWinterDesc:'ثلوج الأطلس، جنوب دافئ، أسواق هادئة',
+seasonTitle:'فصل لكل <span class="em">مزاج</span>',
+routesTitle:'ثلاثة مسارات، <span class="em">مملكة واحدة</span>',
+filterAll:'الكل'
+  }
+};
+
+let currentLang = 'fr';
+const langBtn = $('#langBtn');
+const langMenu = $('#langMenu');
+
+langBtn.addEventListener('click', () => langMenu.classList.toggle('open'));
+document.addEventListener('click', e => { if (!e.target.closest('.lang-wrap')) langMenu.classList.remove('open'); });
+
+langMenu.addEventListener('click', e => {
+  const btn = e.target.closest('[data-lang]');
+  if (!btn) return;
+  currentLang = btn.dataset.lang;
+  langMenu.classList.remove('open');
+  $$('#langMenu button').forEach(b => b.classList.toggle('active', b.dataset.lang === currentLang));
+  langBtn.querySelector('span').textContent = currentLang.toUpperCase();
+  applyTranslation();
+});
+
+function applyTranslation() {
+  const t = TRANSLATIONS[currentLang];
+  const isAr = currentLang === 'ar';
+
+  // Direction RTL/LTR
+  document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr');
+
+  // Hero
+  const titles = $$('.hero-title .l span');
+  if (titles.length >= 3) { titles[0].textContent = t.heroTitle[0]; titles[1].textContent = t.heroTitle[1]; titles[2].textContent = t.heroTitle[2]; }
+  const sub = $('.hero-sub'); if (sub) sub.textContent = t.heroSub;
+  const btns = $$('.hero-cta .btn');
+  if (btns[0]) btns[0].innerHTML = t.exploreBtn + ' <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  if (btns[1]) btns[1].textContent = t.mapBtn;
+
+  // Stats
+  const statsHead = $$('#page-home .sec-head');
+  if (statsHead[0]) { statsHead[0].querySelector('.eyebrow').textContent = t.statsEyebrow; statsHead[0].querySelector('h2').innerHTML = t.statsTitle; }
+  const lbls = $$('.stat .lbl');
+  if (lbls[0]) { lbls[0].textContent = t.stat1; lbls[1].textContent = t.stat2; lbls[2].textContent = t.stat3; lbls[3].textContent = t.stat4; }
+
+  // Essential cities section
+  if (statsHead[1]) { statsHead[1].querySelector('.eyebrow').textContent = t.essential; statsHead[1].querySelector('h2').innerHTML = t.wanderTitle; }
+  const cardTitle = $('.hero-card h4'); if (cardTitle) cardTitle.textContent = t.wanderCard;
+
+  // Featured
+  if (statsHead[2]) { statsHead[2].querySelector('.eyebrow').textContent = t.featEyebrow; statsHead[2].querySelector('h2').innerHTML = t.featTitle; const p = statsHead[2].querySelector('p'); if (p) p.textContent = t.featDesc; }
+  const seeAllBtn = $('#page-home .btn-ghost[data-go="cities"]'); if (seeAllBtn) seeAllBtn.innerHTML = t.seeAll + ' <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  // Nav
+  const navLinks = $$('#menu a');
+  const navKeys = ['navHome','navCities','navLandmarks','navCuisine','navCulture','navMap','navGallery','navGuide'];
+  navLinks.forEach((a, i) => { if (navKeys[i] && t[navKeys[i]]) a.textContent = t[navKeys[i]]; });
+
+  // Drawer
+  const drawerLinks = $$('.drawer-panel a');
+  drawerLinks.forEach((a, i) => { if (navKeys[i] && t[navKeys[i]]) a.textContent = t[navKeys[i]]; });
+  // Concierge
+  const cHead = $$('#page-home .sec-head');
+  if (cHead[3]) { cHead[3].querySelector('.eyebrow').textContent = t.conciergeEyebrow; cHead[3].querySelector('h2').innerHTML = t.conciergeTitle; const p = cHead[3].querySelector('p'); if (p) p.textContent = t.conciergeDesc; }
+  const cLabels = $$('.ai-q label');
+  if (cLabels[0]) cLabels[0].textContent = t.conciergeVibe;
+  if (cLabels[1]) cLabels[1].textContent = t.conciergePace;
+  if (cLabels[2]) cLabels[2].textContent = t.conciergeLen;
+  const cBtn = $('#aiRun');
+  if (cBtn) cBtn.innerHTML = t.conciergeBtn + ' <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+
+  // Footer
+  const footCols = $$('.foot-col h5');
+  if (footCols[0]) footCols[0].textContent = t.footExplore;
+  if (footCols[1]) footCols[1].textContent = t.footPlan;
+  if (footCols[2]) footCols[2].textContent = t.footRegions;
+  const footDesc = $('.foot-brand p'); if (footDesc) footDesc.textContent = t.footDesc;
+  const footBot = $('.foot-bottom'); if (footBot) footBot.innerHTML = '<span class="ar">المغرب · أرض النور</span> &nbsp;·&nbsp; ' + t.footBottom + ' &nbsp;·&nbsp; © 2026';
+  // Pages headers
+  const pages = [
+    {page:'cities', eyebrow:t.citiesEyebrow, title:t.citiesPageTitle, desc:t.citiesPageDesc},
+    {page:'landmarks', eyebrow:t.landmarksEyebrow, title:t.landmarksPageTitle, desc:t.landmarksPageDesc},
+    {page:'cuisine', eyebrow:t.cuisineEyebrow, title:t.cuisinePageTitle, desc:t.cuisinePageDesc},
+    {page:'culture', eyebrow:t.cultureEyebrow, title:t.culturePageTitle, desc:t.culturePageDesc},
+    {page:'map', eyebrow:t.mapEyebrow, title:t.mapPageTitle, desc:t.mapPageDesc},
+    {page:'gallery', eyebrow:t.galleryEyebrow, title:t.galleryPageTitle, desc:t.galleryPageDesc},
+    {page:'guide', eyebrow:t.guideEyebrow, title:t.guidePageTitle, desc:t.guidePageDesc}
+  ];
+  pages.forEach(p => {
+    const sec = $('#page-'+p.page+' .page-head');
+    if (!sec) return;
+    const ey = sec.querySelector('.eyebrow'); if (ey) ey.textContent = p.eyebrow;
+    const h = sec.querySelector('h1'); if (h) h.innerHTML = p.title;
+    const d = sec.querySelector('p'); if (d) d.innerHTML = p.desc;
+  });
+
+  // Landmarks timeline
+  const tlHead = $$('#page-landmarks .sec-head');
+  if (tlHead[0]) { const ey = tlHead[0].querySelector('.eyebrow'); if (ey) ey.textContent = t.timelineEyebrow; const h = tlHead[0].querySelector('h2'); if (h) h.innerHTML = t.timelineTitle; }
+
+  // Guide cards
+  const guideCards = $$('.guide-card h3');
+  if (guideCards[0]) guideCards[0].textContent = t.guideBestTime;
+  if (guideCards[1]) guideCards[1].textContent = t.guideTransport;
+  if (guideCards[2]) guideCards[2].textContent = t.guideKnow;
+  const guideDescs = $$('.guide-card > p');
+  if (guideDescs[0]) guideDescs[0].textContent = t.guideBestTimeDesc;
+  if (guideDescs[1]) guideDescs[1].textContent = t.guideTransportDesc;
+  if (guideDescs[2]) guideDescs[2].textContent = t.guideKnowDesc;
+
+  // Seasons
+  const seasonTitles = $$('.season h4');
+  const seasonDescs = $$('.season p');
+  if (seasonTitles[0]) { seasonTitles[0].textContent = t.seasonSpring; seasonTitles[1].textContent = t.seasonSummer; seasonTitles[2].textContent = t.seasonAutumn; seasonTitles[3].textContent = t.seasonWinter; }
+  if (seasonDescs[0]) { seasonDescs[0].textContent = t.seasonSpringDesc; seasonDescs[1].textContent = t.seasonSummerDesc; seasonDescs[2].textContent = t.seasonAutumnDesc; seasonDescs[3].textContent = t.seasonWinterDesc; }
+
+  // Season + Routes section titles
+  const guideHeads = $$('#page-guide .sec-head h2');
+  if (guideHeads[0]) guideHeads[0].innerHTML = t.seasonTitle;
+  if (guideHeads[1]) guideHeads[1].innerHTML = t.routesTitle;
+
+  // Gallery filter "All"
+  const allFilter = $('.filter[data-cat="All"]');
+  if (allFilter) allFilter.textContent = t.filterAll;
+} 
+applyTranslation();
+/* ===================== INIT ===================== */
+renderCities();renderLandmarks();renderCuisine();renderCulture();renderGallery();renderItins();
+buildMap();aiSetup();paintZellige();initReveal();onScroll();
+
+/* loader */
+window.addEventListener('load',()=>setTimeout(()=>$('#loader').classList.add('done'),1400));
+setTimeout(()=>$('#loader').classList.add('done'),2600); // fallback
+</script>
+</body>
+</html>
