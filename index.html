@@ -1463,7 +1463,7 @@ function cityModal(c){
     <h4>Local traditions</h4>
     <div class="chips">${c.traditions.map(x=>`<span class="chip"><b>•</b> ${x}</span>`).join('')}</div>
     <h4>Photo gallery</h4>
-    <div class="mini-gallery">${[0,1,2,3].map(i=>`<div class="mg" style="${artStyle(c.col[i%2],c.col[(i+1)%2])}">${c.gallery&&c.gallery[i]?`<img src="${c.gallery[i]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" loading="lazy" onerror="this.style.display='none'">`:`<div style="position:absolute;inset:0;opacity:.25;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:80px"></div>`}</div>`).join('')}</div>
+    <div class="mini-gallery" data-gallery='${JSON.stringify(c.gallery||[]).replace(/'/g,"&#39;")}'>${[0,1,2,3].map(i=>`<div class="mg" ${c.gallery&&c.gallery[i]?`data-mg-i="${i}"`:''} style="${artStyle(c.col[i%2],c.col[(i+1)%2])}">${c.gallery&&c.gallery[i]?`<img src="${c.gallery[i]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" loading="lazy" onerror="this.style.display='none'">`:`<div style="position:absolute;inset:0;opacity:.25;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:80px"></div>`}</div>`).join('')}</div>
     <h4>Best attractions</h4>
     <div>${c.att.map((a,i)=>`<div class="attraction"><span class="an">0${i+1}</span><div><b>${a[0]}</b><p>${a[1]}</p></div></div>`).join('')}</div>
   </div>`;
@@ -1479,7 +1479,7 @@ function landmarkModal(l){
     <h4>At a glance</h4>
     <div class="chips"><span class="chip"><b>Era:</b> ${l.era}</span><span class="chip"><b>Built:</b> ${l.year}</span><span class="chip"><b>Location:</b> ${l.city}</span></div>
     <h4>Gallery</h4>
-    <div class="mini-gallery">${[0,1,2,3].map(i=>`<div class="mg" style="${artStyle(l.col[i%2],l.col[(i+1)%2])}">${l.gallery&&l.gallery[i]?`<img src="${l.gallery[i]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" loading="lazy" onerror="this.style.display='none'">`:`<div style="position:absolute;inset:0;opacity:.25;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:80px"></div>`}</div>`).join('')}</div>
+    <div class="mini-gallery" data-gallery='${JSON.stringify(l.gallery||[]).replace(/'/g,"&#39;")}'>${[0,1,2,3].map(i=>`<div class="mg" ${l.gallery&&l.gallery[i]?`data-mg-i="${i}"`:''} style="${artStyle(l.col[i%2],l.col[(i+1)%2])}">${l.gallery&&l.gallery[i]?`<img src="${l.gallery[i]}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" loading="lazy" onerror="this.style.display='none'">`:`<div style="position:absolute;inset:0;opacity:.25;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:80px"></div>`}</div>`).join('')}</div>
   </div>`;
 }
 function dishModal(d){
@@ -1524,11 +1524,16 @@ function openLightbox(i){
   lbList=GALLERY;lbIndex=i;paintLightbox();
   lightbox.classList.add('open');document.body.classList.add('locked');
 }
+function openImageLightbox(urls,i){
+  lbList=urls.map(u=>({img:u,col:['#2a2119','#0f0b07'],cat:'',t:''}));
+  lbIndex=i;paintLightbox();
+  lightbox.classList.add('open');document.body.classList.add('locked');
+}
 function paintLightbox(){
   const g=lbList[lbIndex];
   $('#lbArt').innerHTML=`<div style="position:absolute;inset:0;${artStyle(g.col[0],g.col[1])}"><div style="position:absolute;inset:0;opacity:.2;mix-blend-mode:overlay;background-image:url('${ZURL}');background-size:140px"></div></div>
     ${g.img?`<img src="${g.img}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:1" onerror="this.style.display='none'">`:''}
-    <div class="lb-cap" style="z-index:2"><span style="color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-size:.78rem">${g.cat}</span><b>${g.t}</b></div>`;
+    ${(g.cat||g.t)?`<div class="lb-cap" style="z-index:2"><span style="color:var(--gold);letter-spacing:.14em;text-transform:uppercase;font-size:.78rem">${g.cat}</span><b>${g.t}</b></div>`:''}`;
 }
 function closeLightbox(){lightbox.classList.remove('open');document.body.classList.remove('locked');}
 
@@ -1596,6 +1601,12 @@ document.addEventListener('click',e=>{
   if(dish){openModal(dishModal(DISHES.find(x=>x.id===dish.dataset.dish)));return;}
   const tile=e.target.closest('[data-tile]');
   if(tile){openLightbox(+tile.dataset.tile);return;}
+  const mg=e.target.closest('.mg[data-mg-i]');
+  if(mg){
+    const urls=JSON.parse(mg.closest('.mini-gallery').dataset.gallery.replace(/&#39;/g,"'"));
+    openImageLightbox(urls,+mg.dataset.mgI);
+    return;
+}
   const filter=e.target.closest('.filter');
   if(filter){$$('.filter').forEach(f=>f.classList.remove('active'));filter.classList.add('active');paintGallery(filter.dataset.cat);return;}
   if(e.target.closest('[data-close]'))closeModal();
